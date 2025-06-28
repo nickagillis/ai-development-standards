@@ -1,0 +1,29 @@
+{
+  "name": "ai-development-standards",
+  "version": "1.1.0",
+  "description": "Shared development standards, architecture patterns, and best practices for AI-human collaborative development",
+  "scripts": {
+    "validate": "node scripts/validate-standards.js",
+    "test": "npm run validate",
+    "check-links": "echo 'Link checking requires markdown-link-check: npm install -g markdown-link-check'",
+    "setup": "echo 'AI Development Standards ready to use! Run: npm run validate'"
+  },
+  "keywords": [
+    "ai",
+    "development",
+    "standards",
+    "mcp",
+    "architecture",
+    "security",
+    "best-practices"
+  ],
+  "author": "AI Development Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nickagillis/ai-development-standards.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
