@@ -1,0 +1,68 @@
+# GitHub Pages Configuration
+title: "MCP-Integrated Development System"
+description: "World's first intelligent, self-coordinating development environment"
+url: "https://nickagillis.github.io"
+baseurl: "/ai-development-standards"
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+# GitHub Pages specific settings
+github:
+  repository_name: ai-development-standards
+  owner_name: nickagillis
+
+# SEO settings
+logo: /assets/logo.png
+social:
+  name: MCP-Integrated Development System
+  links:
+    - https://github.com/nickagillis/ai-development-standards
+
+# Navigation
+header_pages:
+  - index.html
+  - duplicate-detection.html
+  - complete-workflow.html
+  - live-analysis.html
+  - global-impact.html
+
+# Exclude from processing
+exclude:
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - vendor
+  - .sass-cache
+  - .jekyll-cache
+  - gemfiles
+  - package.json
+  - package-lock.json
+
+# Plugin settings
+plugins:
+  - jekyll-feed
+  - jekyll-sitemap
+  - jekyll-seo-tag
+
+# Collections
+collections:
+  demos:
+    output: true
+    permalink: /:collection/:name/
+
+# Default layouts
+defaults:
+  - scope:
+      path: ""
+      type: "pages"
+    values:
+      layout: "default"
+  - scope:
+      path: ""
+      type: "demos"
+    values:
+      layout: "demo"
