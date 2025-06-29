@@ -70,6 +70,7 @@ npm run setup      # Prepare repo for use
 - **Future-ready** experimental integration
 - **Self-validating** quality assurance
 - **Professional merge processes**
+- **Community-driven learning**
 
 ## 📁 Repository Structure
 
@@ -86,6 +87,7 @@ npm run setup      # Prepare repo for use
 ├── docs/                # Detailed documentation
 │   ├── how-to-use.md    # Usage instructions
 │   ├── security.md      # Security guidelines
+│   ├── community-wisdom-engine.md # Revolutionary learning system
 │   ├── validation-framework.md # Automated testing guide
 │   ├── future-roadmap.md # Technology evolution tracking
 │   └── experimental-dependencies.md # Safe bleeding-edge adoption
@@ -105,6 +107,7 @@ We prioritize safety and quality in every project:
 - **Safe experimental adoption** with fallback systems
 - **Automated validation** of standards and templates
 - **Comprehensive merge validation** with quality gates
+- **Privacy-first research** with maximum user protection
 
 ## 🚀 Available Templates
 
@@ -130,6 +133,11 @@ Choose your project type:
 - **Self-Validation:** `npm run validate` - Test everything works
 - **Merge Validation:** Complete pre-merge and post-merge verification
 
+### **Revolutionary Learning:**
+- **[Community Wisdom Engine](./docs/community-wisdom-engine.md)** - Learn from collective success/failure patterns
+- **Voluntary Pattern Sharing** - Contribute improvements back to community
+- **Anonymous Failure Prevention** - Learn from others' mistakes safely
+
 ### **Future-Ready Development:**
 - **[Future Technologies Roadmap](./docs/future-roadmap.md)** - Evolution tracking
 - **[Experimental Dependencies](./docs/experimental-dependencies.md)** - Safe innovation
@@ -142,6 +150,14 @@ Choose your project type:
 - **Multi-format Support** - PDF, DOCX, TXT, and web content processing
 - **Production-ready Patterns** - Adapter pattern with fallback systems
 - **Security Validation** - Input sanitization and file type restrictions
+
+### **🧠 Community Wisdom Engine (Research):**
+- **Revolutionary Learning System** - Learn from collective success AND failure patterns
+- **Privacy-First Design** - Maximum user protection and voluntary participation
+- **Anonymous Pattern Sharing** - Share what doesn't work to prevent collective mistakes
+- **Success Pattern Recognition** - Identify and share what works really well
+- **Community Intelligence** - Exponential learning through collective experience
+- **Safety Framework** - Red Zone classification with maximum safeguards
 
 ### **AI Memory & State Management:**
 - **Persistent Memory Patterns** - Session, long-term, semantic memory
@@ -157,6 +173,7 @@ Choose your project type:
 
 ### **Ready for Emerging Technologies:**
 - **LlamaIndex** - Document processing and RAG capabilities (Yellow Zone)
+- **Community Wisdom Engine** - Revolutionary collective learning (Red Zone)
 - **MemoRizz** - Python AI memory library integration
 - **A2A Protocol** - Agent-to-agent communication
 - **Advanced MCP Servers** - Memory, multi-agent, and coordination
@@ -207,6 +224,7 @@ cd templates/node-api
 - **Annual Reviews** - Major standards revisions
 - **Continuous Validation** - Automated testing of all standards
 - **Merge Quality Monitoring** - Track merge success and efficiency
+- **Community Learning** - Evolve through collective wisdom
 
 ### **Quality Gates:**
 Every project must pass:
@@ -227,6 +245,7 @@ Every project must pass:
 - **Future Preparation** - Ready for AI memory, multi-agent, and distributed systems
 - **Quality Assurance** - Self-validating standards ensure reliability
 - **Process Excellence** - Professional merge and validation workflows
+- **Community Intelligence** - Revolutionary collective learning systems
 
 ### **Technology Leadership:**
 - **Early Adoption** - Evaluate technologies before competitors
@@ -235,6 +254,7 @@ Every project must pass:
 - **Research Partnerships** - Collaborate with technology leaders
 - **Validation Excellence** - Prove our standards work before using them
 - **Process Innovation** - Demonstrate professional development workflows
+- **Collective Intelligence** - Pioneer community-driven improvement
 
 ## 🧪 Validation Excellence
 
@@ -252,8 +272,17 @@ Every project must pass:
 - **Continuous Quality** - Automated monitoring and improvement
 - **Community Trust** - Others can verify our standards work
 - **Complete Process Coverage** - From development to merge validation
+- **Revolutionary Learning** - First-ever community wisdom engine for AI development
 
 ## 🎯 Version History
+
+- **v1.5** *(June 29, 2025)* - Revolutionary Community Wisdom Engine
+  - **NEW:** Community Wisdom Engine for collective learning from success/failure patterns
+  - **NEW:** Red Zone experimental classification with maximum safety
+  - **NEW:** Privacy-first anonymous pattern sharing system
+  - **NEW:** Voluntary contribution framework with complete user control
+  - **NEW:** Revolutionary approach to preventing repeated community mistakes
+  - Established foundation for transforming open source collaboration
 
 - **v1.4** *(June 29, 2025)* - Advanced document processing and data liberation
   - **NEW:** LlamaIndex integration for document processing and RAG
@@ -298,8 +327,9 @@ Every project must pass:
 5. **Security Questions?** → Review [Security Guidelines](./docs/security.md)
 6. **Quality Assurance?** → See [Validation Framework](./docs/validation-framework.md)
 7. **Merge Process?** → Follow [Merge Readiness Checklist](./checklists/merge-readiness.md)
-8. **Cutting-Edge Tech?** → See [Experimental Dependencies](./docs/experimental-dependencies.md)
-9. **Future Planning?** → Review [Technology Roadmap](./docs/future-roadmap.md)
+8. **Revolutionary Learning?** → Explore [Community Wisdom Engine](./docs/community-wisdom-engine.md)
+9. **Cutting-Edge Tech?** → See [Experimental Dependencies](./docs/experimental-dependencies.md)
+10. **Future Planning?** → Review [Technology Roadmap](./docs/future-roadmap.md)
 
 ---
 
@@ -309,4 +339,4 @@ Every project must pass:
 
 **Innovation requires risk, but smart risk management enables sustainable innovation.** 🧪⚡
 
-**Now with comprehensive document processing, self-validating standards, and systematic merge validation - because the future of AI development requires professional processes and cutting-edge capabilities.** 🦙🧪✅🔀
+**Now with revolutionary community wisdom engine, comprehensive document processing, self-validating standards, and systematic merge validation - because the future of AI development requires both professional processes and collective intelligence.** 🧠🦙🧪✅🔀
