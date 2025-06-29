@@ -16,6 +16,7 @@ class StandardsValidator {
     await this.validateDocumentation();
     await this.validateTemplates();
     await this.validateConfigurations();
+    await this.validateCommunityWisdomEngine();
     
     this.printResults();
   }
@@ -30,11 +31,14 @@ class StandardsValidator {
       'architecture/memory-patterns.md',
       'checklists/pre-development.md',
       'checklists/code-review.md',
+      'checklists/merge-readiness.md',
       'docs/security.md',
       'docs/experimental-dependencies.md',
       'docs/future-roadmap.md',
       'docs/how-to-use.md',
-      'docs/standards-validation.md'
+      'docs/standards-validation.md',
+      'docs/validation-framework.md',
+      'docs/community-wisdom-engine.md'
     ];
     
     for (const file of requiredFiles) {
@@ -89,6 +93,37 @@ class StandardsValidator {
         this.pass(`Valid JSON: ${file}`);
       } catch (error) {
         this.fail(`Invalid JSON in ${file}: ${error.message}`);
+      }
+    }
+  }
+
+  async validateCommunityWisdomEngine() {
+    console.log('🧠 Validating Community Wisdom Engine...');
+    
+    // Check if community wisdom engine documentation exists
+    const communityWisdomFile = 'docs/community-wisdom-engine.md';
+    this.checkFileExists(communityWisdomFile);
+    
+    // Validate Red Zone classification in experimental dependencies
+    const expDepFile = 'docs/experimental-dependencies.md';
+    if (fs.existsSync(expDepFile)) {
+      const content = fs.readFileSync(expDepFile, 'utf8');
+      if (content.includes('Community Wisdom Engine') && content.includes('Red Zone')) {
+        this.pass('Community Wisdom Engine properly classified as Red Zone');
+      } else {
+        this.fail('Community Wisdom Engine missing Red Zone classification');
+      }
+    } else {
+      this.fail('Experimental dependencies documentation missing');
+    }
+    
+    // Check README integration
+    if (fs.existsSync('README.md')) {
+      const readmeContent = fs.readFileSync('README.md', 'utf8');
+      if (readmeContent.includes('v1.5') && readmeContent.includes('Community Wisdom')) {
+        this.pass('README.md properly updated for v1.5 with Community Wisdom Engine');
+      } else {
+        this.fail('README.md missing v1.5 or Community Wisdom Engine references');
       }
     }
   }
@@ -148,6 +183,7 @@ class StandardsValidator {
     } else {
       console.log('\n🎉 All standards validated successfully!');
       console.log('\n✅ Your AI development standards are ready to use.');
+      console.log('\n🧠 Community Wisdom Engine: Red Zone experimental dependency properly integrated');
     }
   }
 }
