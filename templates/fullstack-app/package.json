@@ -1,0 +1,59 @@
+{
+  "name": "fullstack-app-template",
+  "version": "1.0.0",
+  "description": "Production-ready full-stack application with React frontend and Node.js backend",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "install:all": "npm install && npm run install:frontend && npm run install:backend",
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "build": "npm run build:frontend && npm run build:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "test": "npm run test:frontend && npm run test:backend",
+    "test:frontend": "cd frontend && npm test",
+    "test:backend": "cd backend && npm test",
+    "test:e2e": "playwright test",
+    "db:setup": "cd backend && npm run db:migrate && npm run db:seed",
+    "db:migrate": "cd backend && npx prisma migrate deploy",
+    "db:seed": "cd backend && npx prisma db seed",
+    "db:reset": "cd backend && npx prisma migrate reset --force",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "docker:build": "docker-compose build",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:backend": "cd backend && npm run lint",
+    "format": "npm run format:frontend && npm run format:backend",
+    "format:frontend": "cd frontend && npm run format",
+    "format:backend": "cd backend && npm run format",
+    "validate": "npm run lint && npm run test && npm run build",
+    "deploy:aws": "./deployment/deploy-aws.sh",
+    "deploy:gcp": "./deployment/deploy-gcp.sh",
+    "deploy:azure": "./deployment/deploy-azure.sh"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "concurrently": "^8.2.2"
+  },
+  "keywords": [
+    "fullstack",
+    "react",
+    "nodejs",
+    "typescript",
+    "postgresql",
+    "prisma",
+    "claude-desktop",
+    "mcp",
+    "ai-development"
+  ],
+  "author": "AI Development Standards",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nickagillis/ai-development-standards.git",
+    "directory": "templates/fullstack-app"
+  }
+}
