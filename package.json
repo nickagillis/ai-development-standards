@@ -1,28 +1,37 @@
 {
   "name": "ai-development-standards",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "description": "Shared development standards, architecture patterns, and best practices for AI-human collaborative development with Claude Desktop context optimization",
   "scripts": {
     "validate": "node scripts/validate-standards.js",
     "validate-context": "node scripts/validate-context.js",
     "validate-context-v2": "node scripts/validate-context-v2.js",
-    "test": "npm run validate",
+    "test": "npm run test:unit && npm run test:integration",
+    "test:unit": "node tests/unit/logger.test.js",
+    "test:integration": "node test-integration-fixed.js",
+    "test:circular-dependency": "node tests/unit/logger.test.js",
+    "test:real-data": "node test-real-data.js",
+    "test:quick": "node quick-fix-test.js",
+    "test:all": "npm run test && npm run test:real-data",
     "check-context": "npm run validate-context",
     "check-links": "echo 'Link checking requires markdown-link-check: npm install -g markdown-link-check'",
-    "setup": "echo 'AI Development Standards ready to use! Run: npm run validate'",
-    "health-check": "npm run validate && npm run validate-context",
+    "setup": "echo 'AI Development Standards ready to use! Run: npm run test'",
+    "health-check": "npm run validate && npm run validate-context && npm run test:unit",
     "refactor-analysis": "node scripts/refactor-large-files.js",
     "refactor-large-files": "node scripts/refactor-large-files.js --apply",
     "complexity-check": "node scripts/refactor-large-files.js --no-report",
     "full-analysis": "npm run health-check && npm run refactor-analysis",
     "pre-merge-validation": "node scripts/pre-merge-validation.js",
     "pre-merge-strict": "node scripts/pre-merge-validation.js --strict --fail-on-warnings",
+    "pre-merge": "npm run test:unit && npm run pre-merge-validation",
     "claude-integration": "bash scripts/claude-integration.sh",
     "setup-real-data": "bash scripts/setup-real-data.sh",
-    "test-real-data": "node test-real-data.js",
     "monitor-ai": "node continuous-ai-monitoring.js",
     "demo-real": "node src/ai-intelligence/demo.js --real-data",
-    "start-intelligence": "node continuous-ai-monitoring.js"
+    "start-intelligence": "node continuous-ai-monitoring.js",
+    "dev": "npm run test:unit && npm run test:integration",
+    "prod-ready": "NODE_ENV=production npm run test:all && npm run pre-merge-strict",
+    "log-collaboration": "node scripts/log-collaboration-session.js"
   },
   "keywords": [
     "ai",
@@ -46,7 +55,12 @@
     "real-time-monitoring",
     "ai-intelligence",
     "github-api",
-    "arxiv-research"
+    "arxiv-research",
+    "circular-dependency-fix",
+    "lazy-loading",
+    "production-ready",
+    "self-healing",
+    "collaboration-logging"
   ],
   "author": "AI Development Team",
   "license": "MIT",
@@ -59,5 +73,19 @@
   },
   "devDependencies": {
     "@types/node": "^20.0.0"
+  },
+  "scripts-docs": {
+    "test": "Run all tests (unit + integration)",
+    "test:unit": "Run unit tests for logger and core systems",
+    "test:integration": "Run integration tests with fixed circular dependency",
+    "test:circular-dependency": "Specifically test circular dependency fix",
+    "test:real-data": "Test with real GitHub/arXiv APIs",
+    "test:quick": "Quick test to verify system works",
+    "test:all": "Complete test suite including real APIs",
+    "health-check": "Quick system health validation",
+    "pre-merge": "Pre-merge validation with unit tests",
+    "dev": "Development workflow (unit + integration tests)",
+    "prod-ready": "Production readiness validation",
+    "log-collaboration": "Log AI collaboration session for Community Wisdom Engine"
   }
 }
