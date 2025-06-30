@@ -1,12 +1,13 @@
 {
   "name": "ai-development-standards",
-  "version": "1.9.4",
+  "version": "1.9.5",
   "description": "Shared development standards, architecture patterns, and best practices for AI-human collaborative development with Claude Desktop context optimization",
   "scripts": {
     "validate": "node scripts/validate-standards.js",
     "validate-context": "node scripts/validate-context.js",
     "validate-context-v2": "node scripts/validate-context-v2.js",
     "validate-repository": "bash scripts/auto-validate-repository-settings.sh",
+    "validate-auto-healing": "bash scripts/validate-auto-healing-compliance.sh",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "node tests/unit/logger.test.js",
     "test:integration": "node test-integration-fixed.js",
@@ -46,8 +47,7 @@
     "prod-ready-auto-healing": "npm run test:auto-healing && npm run prod-ready",
     "prod-ready-complete": "npm run test:compliance && npm run prod-ready-auto-healing",
     "log-collaboration": "node scripts/collaboration-logger-core.js",
-    "community-wisdom": "node scripts/community-wisdom-engine-core.js",
-    "validate-auto-healing": "source scripts/auto-healing-commons.sh && validate_auto_healing_compliance"
+    "community-wisdom": "node scripts/community-wisdom-engine-core.js"
   },
   "keywords": [
     "ai",
@@ -83,7 +83,8 @@
     "repository-automation",
     "branch-protection",
     "self-compliance",
-    "repository-validation"
+    "repository-validation",
+    "github-actions-compatible"
   ],
   "author": "AI Development Team",
   "license": "MIT",
@@ -99,6 +100,7 @@
   },
   "scripts-docs": {
     "validate-repository": "Validate GitHub repository compliance settings and score",
+    "validate-auto-healing": "Validate auto-healing compliance (GitHub Actions compatible)",
     "test:compliance": "Complete compliance validation (repository + auto-healing)",
     "health-check-complete": "Full health check including repository validation",
     "pre-merge-complete": "Complete pre-merge validation with repository compliance",
