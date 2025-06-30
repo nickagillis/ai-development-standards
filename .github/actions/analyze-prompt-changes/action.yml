@@ -1,0 +1,70 @@
+name: 'Analyze Prompt Changes'
+description: 'Analyze the impact of upstream prompt changes'
+inputs:
+  current_version:
+    description: 'Current version'
+    required: true
+  upstream_version:
+    description: 'Upstream version'
+    required: true
+outputs:
+  org_customizations:
+    description: 'Whether organizational customizations exist'
+    value: ${{ steps.analyze.outputs.org_customizations }}
+  change_type:
+    description: 'Type of change (patch/minor/major)'
+    value: ${{ steps.analyze.outputs.change_type }}
+  urgency:
+    description: 'Urgency level (high/normal/review)'
+    value: ${{ steps.analyze.outputs.urgency }}
+
+runs:
+  using: 'composite'
+  steps:
+  - name: Analyze changes impact
+    id: analyze
+    shell: bash
+    run: |
+      echo "Analyzing impact of upstream changes..."
+      
+      # Check if there are organizational customizations
+      ORG_CUSTOMIZATIONS=""
+      if grep -q "ORG-SPECIFIC" docs/ai-integration-prompts-core.md 2>/dev/null; then
+        ORG_CUSTOMIZATIONS="true"
+        echo "⚠️  Organizational customizations detected"
+      fi
+      
+      # Determine change type and urgency
+      CURRENT_VERSION="${{ inputs.current_version }}"
+      UPSTREAM_VERSION="${{ inputs.upstream_version }}"
+      
+      CHANGE_TYPE="unknown"
+      if [[ "$UPSTREAM_VERSION" =~ ^v([0-9]+)\.([0-9]+) ]] && [[ "$CURRENT_VERSION" =~ ^v([0-9]+)\.([0-9]+) ]]; then
+        UP_MAJOR="${BASH_REMATCH[1]}"
+        UP_MINOR="${BASH_REMATCH[2]}"
+        
+        if [[ "$CURRENT_VERSION" =~ ^v([0-9]+)\.([0-9]+) ]]; then
+          CUR_MAJOR="${BASH_REMATCH[1]}"
+          CUR_MINOR="${BASH_REMATCH[2]}"
+          
+          if [ "$UP_MAJOR" -gt "$CUR_MAJOR" ]; then
+            CHANGE_TYPE="major"
+          elif [ "$UP_MINOR" -gt "$CUR_MINOR" ]; then
+            CHANGE_TYPE="minor"
+          else
+            CHANGE_TYPE="patch"
+          fi
+        fi
+      fi
+      
+      # Set urgency level
+      URGENCY="normal"
+      if [ "$CHANGE_TYPE" = "patch" ]; then
+        URGENCY="high"  # Patches usually critical fixes
+      elif [ "$CHANGE_TYPE" = "major" ]; then
+        URGENCY="review"  # Major changes need review
+      fi
+      
+      echo "org_customizations=$ORG_CUSTOMIZATIONS" >> $GITHUB_OUTPUT
+      echo "change_type=$CHANGE_TYPE" >> $GITHUB_OUTPUT
+      echo "urgency=$URGENCY" >> $GITHUB_OUTPUT
