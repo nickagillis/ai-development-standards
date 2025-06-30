@@ -1,6 +1,6 @@
 {
   "name": "ai-development-standards",
-  "version": "1.9.1",
+  "version": "1.9.2",
   "description": "Shared development standards, architecture patterns, and best practices for AI-human collaborative development with Claude Desktop context optimization",
   "scripts": {
     "validate": "node scripts/validate-standards.js",
@@ -36,7 +36,8 @@
     "dev-auto-healing": "npm run test:auto-healing && npm run dev",
     "prod-ready": "NODE_ENV=production npm run test:all && npm run pre-merge-strict",
     "prod-ready-auto-healing": "npm run test:auto-healing && npm run prod-ready",
-    "log-collaboration": "node scripts/log-collaboration-session.js",
+    "log-collaboration": "node scripts/collaboration-logger-core.js",
+    "community-wisdom": "node scripts/community-wisdom-engine-core.js",
     "validate-auto-healing": "source scripts/auto-healing-commons.sh && validate_auto_healing_compliance"
   },
   "keywords": [
@@ -100,7 +101,8 @@
     "dev-auto-healing": "Development workflow with auto-healing validation",
     "prod-ready": "Production readiness validation",
     "prod-ready-auto-healing": "Production readiness with auto-healing compliance",
-    "log-collaboration": "Log AI collaboration session for Community Wisdom Engine",
+    "log-collaboration": "Log AI collaboration session (context-optimized)",
+    "community-wisdom": "Run Community Wisdom Engine analysis (context-optimized)",
     "validate-auto-healing": "Validate auto-healing compliance and standards adherence"
   }
 }
