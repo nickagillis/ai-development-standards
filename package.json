@@ -1,6 +1,6 @@
 {
   "name": "ai-development-standards",
-  "version": "1.7.1",
+  "version": "1.8.0",
   "description": "Shared development standards, architecture patterns, and best practices for AI-human collaborative development with Claude Desktop context optimization",
   "scripts": {
     "validate": "node scripts/validate-standards.js",
@@ -14,7 +14,10 @@
     "refactor-analysis": "node scripts/refactor-large-files.js",
     "refactor-large-files": "node scripts/refactor-large-files.js --apply",
     "complexity-check": "node scripts/refactor-large-files.js --no-report",
-    "full-analysis": "npm run health-check && npm run refactor-analysis"
+    "full-analysis": "npm run health-check && npm run refactor-analysis",
+    "pre-merge-validation": "node scripts/pre-merge-validation.js",
+    "pre-merge-strict": "node scripts/pre-merge-validation.js --strict --fail-on-warnings",
+    "claude-integration": "bash scripts/claude-integration.sh"
   },
   "keywords": [
     "ai",
@@ -32,7 +35,9 @@
     "micro-modules",
     "refactoring",
     "complexity-analysis",
-    "automated-validation"
+    "automated-validation",
+    "pre-merge-validation",
+    "ai-verification"
   ],
   "author": "AI Development Team",
   "license": "MIT",
