@@ -1,0 +1,279 @@
+name: 🔄 Upstream Prompt Updates Check
+
+# GitHub Action for fork users to automatically sync prompt improvements
+# while preserving organizational customizations
+
+on:
+  schedule:
+    # Check for upstream updates every Monday at 9 AM UTC
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    # Allow manual triggering
+  
+jobs:
+  check-upstream-prompts:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout fork
+      uses: actions/checkout@v4
+      with:
+        # Fetch full history for better diff analysis
+        fetch-depth: 0
+        
+    - name: 🔗 Add upstream remote
+      run: |
+        git remote add upstream https://github.com/nickagillis/ai-development-standards.git
+        git fetch upstream
+        
+    - name: 📊 Check for prompt updates
+      id: check_updates
+      run: |
+        echo "Checking for upstream prompt improvements..."
+        
+        # Check if prompt files have been updated upstream
+        PROMPT_CHANGES=$(git diff HEAD upstream/main --name-only | grep -E "(docs/ai-integration-prompts\.md|docs/prompt-changelog\.md)" || echo "")
+        
+        if [ -n "$PROMPT_CHANGES" ]; then
+          echo "🚀 Upstream prompt improvements detected!"
+          echo "changes_detected=true" >> $GITHUB_OUTPUT
+          
+          # Get latest upstream version
+          UPSTREAM_VERSION=$(git show upstream/main:docs/ai-integration-prompts.md | grep "# AI Integration Prompts v" | head -1 | grep -o "v[0-9]\+\.[0-9]\+" || echo "unknown")
+          CURRENT_VERSION=$(git show HEAD:docs/ai-integration-prompts.md | grep "# AI Integration Prompts v" | head -1 | grep -o "v[0-9]\+\.[0-9]\+" || echo "unknown")
+          
+          echo "upstream_version=$UPSTREAM_VERSION" >> $GITHUB_OUTPUT
+          echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+          
+          # Generate summary of changes
+          echo "📝 Changed files:" > /tmp/changes_summary.txt
+          echo "$PROMPT_CHANGES" | sed 's/^/  - /' >> /tmp/changes_summary.txt
+          echo "" >> /tmp/changes_summary.txt
+          echo "📋 Version update: $CURRENT_VERSION → $UPSTREAM_VERSION" >> /tmp/changes_summary.txt
+          
+          cat /tmp/changes_summary.txt
+        else
+          echo "✅ No upstream prompt changes detected"
+          echo "changes_detected=false" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: 📋 Analyze changes impact
+      if: steps.check_updates.outputs.changes_detected == 'true'
+      id: analyze_changes
+      run: |
+        echo "Analyzing impact of upstream changes..."
+        
+        # Check if there are organizational customizations that might conflict
+        ORG_CUSTOMIZATIONS=""
+        if grep -q "ORG-SPECIFIC" docs/ai-integration-prompts.md 2>/dev/null; then
+          ORG_CUSTOMIZATIONS="true"
+          echo "⚠️  Organizational customizations detected"
+        fi
+        
+        # Check change type (patch, minor, major)
+        CURRENT_VERSION="${{ steps.check_updates.outputs.current_version }}"
+        UPSTREAM_VERSION="${{ steps.check_updates.outputs.upstream_version }}"
+        
+        CHANGE_TYPE="unknown"
+        if [[ "$UPSTREAM_VERSION" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]] && [[ "$CURRENT_VERSION" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+          # Extract version numbers
+          UP_MAJOR="${BASH_REMATCH[1]}"
+          UP_MINOR="${BASH_REMATCH[2]}"
+          UP_PATCH="${BASH_REMATCH[3]}"
+          
+          if [[ "$CURRENT_VERSION" =~ ^v([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            CUR_MAJOR="${BASH_REMATCH[1]}"
+            CUR_MINOR="${BASH_REMATCH[2]}"
+            CUR_PATCH="${BASH_REMATCH[3]}"
+            
+            if [ "$UP_MAJOR" -gt "$CUR_MAJOR" ]; then
+              CHANGE_TYPE="major"
+            elif [ "$UP_MINOR" -gt "$CUR_MINOR" ]; then
+              CHANGE_TYPE="minor"
+            elif [ "$UP_PATCH" -gt "$CUR_PATCH" ]; then
+              CHANGE_TYPE="patch"
+            fi
+          fi
+        fi
+        
+        echo "org_customizations=$ORG_CUSTOMIZATIONS" >> $GITHUB_OUTPUT
+        echo "change_type=$CHANGE_TYPE" >> $GITHUB_OUTPUT
+        
+        # Set urgency level
+        URGENCY="normal"
+        if [ "$CHANGE_TYPE" = "patch" ]; then
+          URGENCY="high"  # Patches are usually critical fixes
+        elif [ "$CHANGE_TYPE" = "major" ]; then
+          URGENCY="review"  # Major changes need careful review
+        fi
+        
+        echo "urgency=$URGENCY" >> $GITHUB_OUTPUT
+        
+    - name: 🔀 Create update branch
+      if: steps.check_updates.outputs.changes_detected == 'true'
+      id: create_branch
+      run: |
+        UPDATE_DATE=$(date +%Y%m%d)
+        BRANCH_NAME="upstream-prompt-updates-$UPDATE_DATE"
+        
+        git config user.name "GitHub Action"
+        git config user.email "action@github.com"
+        
+        git checkout -b "$BRANCH_NAME"
+        echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+        
+    - name: 📥 Merge upstream changes
+      if: steps.check_updates.outputs.changes_detected == 'true'
+      run: |
+        echo "Merging upstream prompt improvements..."
+        
+        # Strategy: Merge specific files from upstream
+        # This preserves organizational customizations in other files
+        git checkout upstream/main -- docs/prompt-changelog.md
+        
+        # For prompts file, we need to be more careful
+        if [ "${{ steps.analyze_changes.outputs.org_customizations }}" = "true" ]; then
+          echo "⚠️  Organizational customizations detected"
+          echo "Creating backup and merging manually..."
+          
+          # Create backup of current customizations
+          cp docs/ai-integration-prompts.md docs/ai-integration-prompts.md.backup
+          
+          # Get upstream version
+          git checkout upstream/main -- docs/ai-integration-prompts.md
+          
+          # Add note about customizations needed
+          cat >> .upstream-merge-notes.md << EOF
+        # ⚠️ MANUAL REVIEW REQUIRED
+        
+        ## Organizational Customizations Detected
+        
+        The upstream merge has replaced the AI integration prompts file.
+        Your organizational customizations are backed up in:
+        - \`docs/ai-integration-prompts.md.backup\`
+        
+        ## Required Actions
+        1. Review the new prompts in \`docs/ai-integration-prompts.md\`
+        2. Compare with your backup: \`git diff --no-index docs/ai-integration-prompts.md.backup docs/ai-integration-prompts.md\`
+        3. Re-apply organizational customizations as needed
+        4. Test the updated prompts
+        5. Update team documentation
+        
+        ## Upstream Changes
+        Version: ${{ steps.check_updates.outputs.current_version }} → ${{ steps.check_updates.outputs.upstream_version }}
+        Type: ${{ steps.analyze_changes.outputs.change_type }}
+        Urgency: ${{ steps.analyze_changes.outputs.urgency }}
+        EOF
+        else
+          # No customizations, safe to merge directly
+          git checkout upstream/main -- docs/ai-integration-prompts.md
+        fi
+        
+        git add .
+        git commit -m "🔄 Merge upstream prompt updates ${{ steps.check_updates.outputs.upstream_version }}
+
+        Upstream changes merged from ai-development-standards main branch.
+        
+        Changes:
+        - docs/ai-integration-prompts.md: ${{ steps.check_updates.outputs.current_version }} → ${{ steps.check_updates.outputs.upstream_version }}
+        - docs/prompt-changelog.md: Updated with latest improvements
+        
+        Change type: ${{ steps.analyze_changes.outputs.change_type }}
+        Review required: ${{ steps.analyze_changes.outputs.org_customizations }}
+        
+        Please review and test before merging to main branch."
+        
+    - name: 📤 Create Pull Request
+      if: steps.check_updates.outputs.changes_detected == 'true'
+      uses: peter-evans/create-pull-request@v5
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        branch: ${{ steps.create_branch.outputs.branch_name }}
+        title: "🔄 Upstream AI Prompt Updates - ${{ steps.check_updates.outputs.upstream_version }}"
+        body: |
+          ## 🚀 Upstream AI Integration Prompt Updates Available
+          
+          **Version Update:** ${{ steps.check_updates.outputs.current_version }} → ${{ steps.check_updates.outputs.upstream_version }}
+          **Change Type:** ${{ steps.analyze_changes.outputs.change_type }}
+          **Urgency:** ${{ steps.analyze_changes.outputs.urgency }}
+          
+          ### 📋 What Changed
+          
+          The upstream [AI Development Standards](https://github.com/nickagillis/ai-development-standards) repository has new prompt improvements available.
+          
+          **Files Updated:**
+          - `docs/ai-integration-prompts.md` - Latest prompt templates with community improvements
+          - `docs/prompt-changelog.md` - Detailed change history and migration notes
+          
+          ### ⚠️ Review Required
+          
+          **Organizational Customizations:** ${{ steps.analyze_changes.outputs.org_customizations == 'true' && 'YES - Manual merge required' || 'NO - Safe to merge' }}
+          
+          ${{ steps.analyze_changes.outputs.org_customizations == 'true' && '
+          **IMPORTANT:** Your organizational customizations have been backed up to:
+          - `docs/ai-integration-prompts.md.backup`
+          - Review file `.upstream-merge-notes.md` for detailed merge instructions
+          
+          Please manually re-apply your organizational customizations after reviewing the upstream improvements.
+          ' || '
+          **Safe to Merge:** No organizational customizations detected. These updates can be merged directly.
+          ' }}
+          
+          ### 🔧 Before Merging
+          
+          1. **Review Changes:** Compare the updated prompts with your current version
+          2. **Test Locally:** Validate that updated prompts work with your projects
+          3. **Update Team:** Notify team members of prompt improvements
+          4. **Documentation:** Update any internal documentation that references prompts
+          
+          ### 📚 Resources
+          
+          - [Prompt Changelog](docs/prompt-changelog.md) - Detailed change history
+          - [Upstream Repository](https://github.com/nickagillis/ai-development-standards)
+          - [Community Discussions](https://github.com/nickagillis/ai-development-standards/discussions)
+          
+          ### 🎯 Benefits
+          
+          These upstream improvements typically include:
+          - Better compliance enforcement patterns
+          - Community-discovered best practices
+          - Enhanced validation mechanisms
+          - Improved development workflow guidance
+          
+          ---
+          
+          *Automatically generated by the Upstream Prompt Updates workflow*
+          *Next check: Next Monday at 9 AM UTC*
+        labels: |
+          prompt-update
+          upstream-sync
+          ${{ steps.analyze_changes.outputs.urgency }}
+        assignees: |
+          # Add your team's prompt maintainers here
+          # Example: devops-team, ai-leads
+        
+    - name: 📢 Notify team
+      if: steps.check_updates.outputs.changes_detected == 'true'
+      run: |
+        echo "🚀 Upstream prompt updates detected and PR created!"
+        echo "Version: ${{ steps.check_updates.outputs.current_version }} → ${{ steps.check_updates.outputs.upstream_version }}"
+        echo "Change type: ${{ steps.analyze_changes.outputs.change_type }}"
+        echo "Urgency: ${{ steps.analyze_changes.outputs.urgency }}"
+        
+        # Additional notification mechanisms can be added here:
+        # - Slack webhook
+        # - Email notification  
+        # - Teams webhook
+        # - Discord webhook
+        
+        # Example Slack notification (requires SLACK_WEBHOOK_URL secret):
+        # curl -X POST -H 'Content-type: application/json' \
+        #   --data '{"text":"🔄 AI Prompt Updates Available: ${{ steps.check_updates.outputs.upstream_version }}"}' \
+        #   ${{ secrets.SLACK_WEBHOOK_URL }}
+        
+    - name: ✅ No updates summary
+      if: steps.check_updates.outputs.changes_detected == 'false'
+      run: |
+        echo "✅ No upstream prompt updates available"
+        echo "Your AI integration prompts are current with upstream"
+        echo "Next check: Next Monday at 9 AM UTC"
