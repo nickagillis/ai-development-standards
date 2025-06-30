@@ -1,11 +1,13 @@
 {
   "name": "ai-development-standards",
-  "version": "1.9.3",
+  "version": "1.9.5",
   "description": "Shared development standards, architecture patterns, and best practices for AI-human collaborative development with Claude Desktop context optimization",
   "scripts": {
     "validate": "node scripts/validate-standards.js",
     "validate-context": "node scripts/validate-context.js",
     "validate-context-v2": "node scripts/validate-context-v2.js",
+    "validate-repository": "bash scripts/auto-validate-repository-settings.sh",
+    "validate-auto-healing": "bash scripts/validate-auto-healing-compliance.sh",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "node tests/unit/logger.test.js",
     "test:integration": "node test-integration-fixed.js",
@@ -14,6 +16,7 @@
     "test:quick": "node quick-fix-test.js",
     "test:all": "npm run test && npm run test:real-data",
     "test:auto-healing": "bash scripts/test-auto-healing-integration.sh",
+    "test:compliance": "npm run validate-repository && npm run test:auto-healing",
     "check-context": "npm run validate-context",
     "check-links": "echo 'Link checking requires markdown-link-check: npm install -g markdown-link-check'",
     "setup": "echo 'AI Development Standards ready to use! Run: npm run test'",
@@ -22,6 +25,7 @@
     "verify-compliance": "bash scripts/verify-repository-compliance.sh",
     "health-check": "npm run validate && npm run validate-context && npm run test:unit",
     "health-check-auto-healing": "npm run test:auto-healing && npm run health-check",
+    "health-check-complete": "npm run validate-repository && npm run health-check-auto-healing",
     "refactor-analysis": "node scripts/refactor-large-files.js",
     "refactor-large-files": "node scripts/refactor-large-files.js --apply",
     "complexity-check": "node scripts/refactor-large-files.js --no-report",
@@ -30,6 +34,7 @@
     "pre-merge-strict": "node scripts/pre-merge-validation.js --strict --fail-on-warnings",
     "pre-merge": "npm run test:unit && npm run pre-merge-validation",
     "pre-merge-auto-healing": "npm run test:auto-healing && npm run pre-merge",
+    "pre-merge-complete": "npm run test:compliance && npm run pre-merge-auto-healing",
     "claude-integration": "bash scripts/claude-integration.sh",
     "setup-real-data": "bash scripts/setup-real-data.sh",
     "monitor-ai": "node continuous-ai-monitoring.js",
@@ -37,11 +42,12 @@
     "start-intelligence": "node continuous-ai-monitoring.js",
     "dev": "npm run test:unit && npm run test:integration",
     "dev-auto-healing": "npm run test:auto-healing && npm run dev",
+    "dev-complete": "npm run test:compliance && npm run dev-auto-healing",
     "prod-ready": "NODE_ENV=production npm run test:all && npm run pre-merge-strict",
     "prod-ready-auto-healing": "npm run test:auto-healing && npm run prod-ready",
+    "prod-ready-complete": "npm run test:compliance && npm run prod-ready-auto-healing",
     "log-collaboration": "node scripts/collaboration-logger-core.js",
-    "community-wisdom": "node scripts/community-wisdom-engine-core.js",
-    "validate-auto-healing": "source scripts/auto-healing-commons.sh && validate_auto_healing_compliance"
+    "community-wisdom": "node scripts/community-wisdom-engine-core.js"
   },
   "keywords": [
     "ai",
@@ -76,7 +82,9 @@
     "standards-compliance",
     "repository-automation",
     "branch-protection",
-    "self-compliance"
+    "self-compliance",
+    "repository-validation",
+    "github-actions-compatible"
   ],
   "author": "AI Development Team",
   "license": "MIT",
@@ -91,27 +99,12 @@
     "@types/node": "^20.0.0"
   },
   "scripts-docs": {
-    "test": "Run all tests (unit + integration)",
-    "test:unit": "Run unit tests for logger and core systems",
-    "test:integration": "Run integration tests with fixed circular dependency",
-    "test:circular-dependency": "Specifically test circular dependency fix",
-    "test:real-data": "Test with real GitHub/arXiv APIs",
-    "test:quick": "Quick test to verify system works",
-    "test:all": "Complete test suite including real APIs",
-    "test:auto-healing": "Test complete auto-healing workflow and compliance",
-    "setup-repository": "Automated repository compliance setup (Unix/Linux/macOS)",
-    "setup-repository-windows": "Automated repository compliance setup (Windows PowerShell)",
-    "verify-compliance": "Verify current repository compliance status",
-    "health-check": "Quick system health validation",
-    "health-check-auto-healing": "Health check including auto-healing validation",
-    "pre-merge": "Pre-merge validation with unit tests",
-    "pre-merge-auto-healing": "Pre-merge validation including auto-healing compliance",
-    "dev": "Development workflow (unit + integration tests)",
-    "dev-auto-healing": "Development workflow with auto-healing validation",
-    "prod-ready": "Production readiness validation",
-    "prod-ready-auto-healing": "Production readiness with auto-healing compliance",
-    "log-collaboration": "Log AI collaboration session (context-optimized)",
-    "community-wisdom": "Run Community Wisdom Engine analysis (context-optimized)",
-    "validate-auto-healing": "Validate auto-healing compliance and standards adherence"
+    "validate-repository": "Validate GitHub repository compliance settings and score",
+    "validate-auto-healing": "Validate auto-healing compliance (GitHub Actions compatible)",
+    "test:compliance": "Complete compliance validation (repository + auto-healing)",
+    "health-check-complete": "Full health check including repository validation",
+    "pre-merge-complete": "Complete pre-merge validation with repository compliance",
+    "dev-complete": "Complete development workflow with full compliance",
+    "prod-ready-complete": "Complete production readiness with full compliance validation"
   }
 }
