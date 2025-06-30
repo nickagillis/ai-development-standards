@@ -1,23 +1,30 @@
 {
   "name": "ai-development-standards",
-  "version": "1.5.0",
-  "description": "Shared development standards, architecture patterns, and best practices for AI-human collaborative development",
+  "version": "1.7.0",
+  "description": "Shared development standards, architecture patterns, and best practices for AI-human collaborative development with Claude Desktop context optimization",
   "scripts": {
     "validate": "node scripts/validate-standards.js",
+    "validate-context": "node scripts/validate-context.js",
     "test": "npm run validate",
+    "check-context": "npm run validate-context",
     "check-links": "echo 'Link checking requires markdown-link-check: npm install -g markdown-link-check'",
-    "setup": "echo 'AI Development Standards ready to use! Run: npm run validate'"
+    "setup": "echo 'AI Development Standards ready to use! Run: npm run validate'",
+    "health-check": "npm run validate && npm run validate-context"
   },
   "keywords": [
     "ai",
-    "development",
+    "development", 
     "standards",
     "mcp",
     "architecture",
     "security",
     "best-practices",
     "community-wisdom",
-    "collective-learning"
+    "collective-learning",
+    "context-optimization",
+    "claude-desktop",
+    "modular-design",
+    "micro-modules"
   ],
   "author": "AI Development Team",
   "license": "MIT",
