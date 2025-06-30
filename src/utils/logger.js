@@ -2,16 +2,23 @@
  * Production-Ready Logging System
  * Single responsibility: Centralized logging
  * Environment-aware log levels and formatting
+ * 
+ * FIXED: Circular dependency with config system
+ * - Uses lazy configuration loading
+ * - Provides sensible defaults when config unavailable
+ * - Maintains thread-safety and performance
  */
 
 const fs = require('fs');
 const path = require('path');
-const { getConfig } = require('../config/wisdom-engine.config');
 
 class Logger {
   constructor(component = 'WisdomEngine') {
     this.component = component;
-    this.config = getConfig();
+    this._config = null; // Lazy-loaded configuration
+    this._configLoadAttempted = false;
+    this._configLoadError = null;
+    
     this.logLevels = {
       debug: 0,
       info: 1,
@@ -19,18 +26,18 @@ class Logger {
       error: 3
     };
     
-    // Set log level based on environment
-    this.currentLogLevel = this.getEnvironmentLogLevel();
+    // Default log level (will be overridden by config when available)
+    this.currentLogLevel = this.getDefaultLogLevel();
     
     // Initialize log directory if needed
     this.initializeLogDirectory();
   }
 
   /**
-   * Get appropriate log level for environment
+   * Get default log level based on NODE_ENV (no config dependency)
    */
-  getEnvironmentLogLevel() {
-    const env = this.config.environment;
+  getDefaultLogLevel() {
+    const env = process.env.NODE_ENV || 'development';
     
     switch (env) {
       case 'production':
@@ -45,6 +52,99 @@ class Logger {
   }
 
   /**
+   * Lazy-load configuration to avoid circular dependency
+   */
+  getConfig() {
+    if (this._config) {
+      return this._config;
+    }
+    
+    if (this._configLoadAttempted && this._configLoadError) {
+      // Don't keep trying if we failed before
+      return null;
+    }
+    
+    if (!this._configLoadAttempted) {
+      this._configLoadAttempted = true;
+      
+      try {
+        // Dynamic require to avoid circular dependency during module initialization
+        const { getConfig } = require('../config/wisdom-engine.config');
+        this._config = getConfig();
+        
+        // Update log level based on config now that it's available
+        this.currentLogLevel = this.getEnvironmentLogLevel();
+        
+        return this._config;
+      } catch (error) {
+        this._configLoadError = error;
+        
+        // Use console.warn directly to avoid recursive logging
+        console.warn('[Logger] Config unavailable, using defaults:', error.message);
+        return null;
+      }
+    }
+    
+    return this._config;
+  }
+
+  /**
+   * Get appropriate log level for environment (with config if available)
+   */
+  getEnvironmentLogLevel() {
+    const config = this.getConfig();
+    
+    if (!config) {
+      return this.getDefaultLogLevel();
+    }
+    
+    const env = config.environment || process.env.NODE_ENV || 'development';
+    
+    switch (env) {
+      case 'production':
+        return this.logLevels.warn;
+      case 'development':
+        return this.logLevels.debug;
+      case 'test':
+        return this.logLevels.error;
+      default:
+        return this.logLevels.info;
+    }
+  }
+
+  /**
+   * Check if feature is enabled (with graceful fallback)
+   */
+  isFeatureEnabled(feature) {
+    const config = this.getConfig();
+    
+    if (!config) {
+      // Sensible defaults when config is unavailable
+      switch (feature) {
+        case 'metrics': return process.env.NODE_ENV === 'development';
+        case 'fileLogging': return process.env.NODE_ENV !== 'test';
+        default: return false;
+      }
+    }
+    
+    try {
+      return config.isEnabled(feature);
+    } catch (error) {
+      // Fallback if config method fails
+      console.warn(`[Logger] Failed to check feature '${feature}':`, error.message);
+      return false;
+    }
+  }
+
+  /**
+   * Get environment safely
+   */
+  getEnvironment() {
+    const config = this.getConfig();
+    return config?.environment || process.env.NODE_ENV || 'development';
+  }
+
+  /**
    * Initialize log directory
    */
   initializeLogDirectory() {
@@ -55,7 +155,7 @@ class Logger {
         fs.mkdirSync(logDir, { recursive: true });
       } catch (error) {
         // Fallback to console-only logging
-        console.warn('Could not create log directory, using console-only logging');
+        console.warn('[Logger] Could not create log directory, using console-only logging');
       }
     }
   }
@@ -90,11 +190,13 @@ class Logger {
   }
 
   /**
-   * Write to log file
+   * Write to log file (with safe environment check)
    */
   writeToFile(level, formattedMessage) {
-    if (this.config.environment === 'test') {
-      return; // Skip file logging in tests
+    const env = this.getEnvironment();
+    
+    if (env === 'test' || !this.isFeatureEnabled('fileLogging')) {
+      return; // Skip file logging in tests or when disabled
     }
 
     try {
@@ -105,7 +207,7 @@ class Logger {
       fs.appendFileSync(logFile, logEntry);
     } catch (error) {
       // Fallback to console if file writing fails
-      console.warn('Failed to write to log file:', error.message);
+      console.warn('[Logger] Failed to write to log file:', error.message);
     }
   }
 
@@ -143,7 +245,7 @@ class Logger {
     }
     
     // Write all logs to general log file in development
-    if (this.config.environment === 'development') {
+    if (this.getEnvironment() === 'development') {
       this.writeToFile('all', formatted);
     }
   }
@@ -177,10 +279,10 @@ class Logger {
   }
 
   /**
-   * Log performance metrics
+   * Log performance metrics (with safe feature check)
    */
   performance(operation, duration, metadata = {}) {
-    if (!this.config.isEnabled('metrics')) {
+    if (!this.isFeatureEnabled('metrics')) {
       return;
     }
 
@@ -282,6 +384,29 @@ class Logger {
     // In a real implementation, this would ensure all pending log writes complete
     this.debug('Log flush requested');
   }
+
+  /**
+   * Reset configuration cache (useful for testing or dynamic reconfiguration)
+   */
+  resetConfig() {
+    this._config = null;
+    this._configLoadAttempted = false;
+    this._configLoadError = null;
+    this.currentLogLevel = this.getDefaultLogLevel();
+  }
+
+  /**
+   * Get current configuration status for debugging
+   */
+  getConfigStatus() {
+    return {
+      configLoaded: !!this._config,
+      configLoadAttempted: this._configLoadAttempted,
+      configLoadError: this._configLoadError?.message || null,
+      currentLogLevel: Object.keys(this.logLevels).find(key => this.logLevels[key] === this.currentLogLevel),
+      environment: this.getEnvironment()
+    };
+  }
 }
 
 /**
@@ -291,7 +416,25 @@ function getLogger(component) {
   return new Logger(component);
 }
 
+/**
+ * Create a simple logger for use during early initialization
+ * (when config system might not be available yet)
+ */
+function createSimpleLogger(component = 'Bootstrap') {
+  return {
+    debug: (msg, data) => {
+      if (process.env.NODE_ENV === 'development') {
+        console.debug(`[DEBUG] [${component}] ${msg}`, data || '');
+      }
+    },
+    info: (msg, data) => console.info(`[INFO] [${component}] ${msg}`, data || ''),
+    warn: (msg, data) => console.warn(`[WARN] [${component}] ${msg}`, data || ''),
+    error: (msg, data) => console.error(`[ERROR] [${component}] ${msg}`, data || '')
+  };
+}
+
 module.exports = {
   Logger,
-  getLogger
+  getLogger,
+  createSimpleLogger
 };
