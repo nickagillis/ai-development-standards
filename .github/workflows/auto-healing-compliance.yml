@@ -1,0 +1,127 @@
+name: Auto-Healing Compliance Check
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  auto-healing-validation:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run Auto-Healing Integration Tests
+      run: npm run test:auto-healing
+      continue-on-error: false
+    
+    - name: Validate Auto-Healing Compliance
+      run: npm run validate-auto-healing
+      continue-on-error: false
+    
+    - name: Run Core System Tests
+      run: |
+        npm run test:unit
+        npm run test:integration
+      continue-on-error: false
+    
+    - name: Validate Standards Adherence
+      run: npm run pre-merge-auto-healing
+      continue-on-error: false
+    
+    - name: Check Handoff Documentation Currency
+      run: |
+        # Check if handoff docs have been updated recently (within 7 days)
+        find . -name "HANDOFF-SUMMARY.md" -mtime +7 -exec echo "Warning: Handoff summary may be stale" \; -exec exit 1 \;
+        find . -name "QUICK-HANDOFF-STATUS.md" -mtime +7 -exec echo "Warning: Quick handoff status may be stale" \; -exec exit 1 \;
+      continue-on-error: true
+    
+    - name: Generate Compliance Report
+      if: always()
+      run: |
+        echo "## Auto-Healing Compliance Report" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Test Results" >> $GITHUB_STEP_SUMMARY
+        echo "- Auto-Healing Integration: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Compliance Validation: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Core System Tests: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Standards Adherence: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Repository Compliance Status" >> $GITHUB_STEP_SUMMARY
+        echo "- Branch Protection: $(if [[ '${{ github.ref }}' == 'refs/heads/main' && '${{ github.event_name }}' == 'push' ]]; then echo '❌ VIOLATION: Direct commit to main detected'; else echo '✅ OK'; fi)" >> $GITHUB_STEP_SUMMARY
+        echo "- PR Process: $(if [[ '${{ github.event_name }}' == 'pull_request' ]]; then echo '✅ OK: Using proper PR workflow'; else echo '⚠️ Direct push detected'; fi)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "*This workflow validates that we practice what we preach with auto-healing standards*" >> $GITHUB_STEP_SUMMARY
+
+  session-logging:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: auto-healing-validation
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Log Collaboration Session (if applicable)
+      run: |
+        # Check if this is a collaboration session commit
+        if git log -1 --pretty=%B | grep -i -E "(session|collaboration|auto-healing|handoff)"; then
+          echo "Collaboration session detected - logging to Community Wisdom Engine"
+          npm run log-collaboration || echo "Session logging completed with warnings"
+        else
+          echo "Regular commit - no session logging needed"
+        fi
+      continue-on-error: true
+    
+    - name: Update Collaboration Metrics
+      run: |
+        # Update collaboration metrics if session was logged
+        if [[ -d "logs/collaboration-sessions" ]]; then
+          echo "Session data found - updating metrics"
+          ls -la logs/collaboration-sessions/
+        fi
+      continue-on-error: true
+
+  compliance-enforcement:
+    runs-on: ubuntu-latest
+    if: failure()
+    needs: auto-healing-validation
+    
+    steps:
+    - name: Report Compliance Failure
+      run: |
+        echo "## 🚨 Auto-Healing Compliance Failed" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "This repository must follow its own auto-healing standards." >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Required Actions:" >> $GITHUB_STEP_SUMMARY
+        echo "1. Fix failing auto-healing tests" >> $GITHUB_STEP_SUMMARY
+        echo "2. Ensure compliance validation passes" >> $GITHUB_STEP_SUMMARY
+        echo "3. Use proper branch-based development workflow" >> $GITHUB_STEP_SUMMARY
+        echo "4. Update handoff documentation as needed" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "*Remember: We must practice what we preach!*" >> $GITHUB_STEP_SUMMARY
+        
+        # Create an issue for tracking compliance failures
+        echo "Creating compliance tracking issue..."
+        # This would require GitHub token with issues:write permission
