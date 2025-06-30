@@ -17,7 +17,12 @@
     "full-analysis": "npm run health-check && npm run refactor-analysis",
     "pre-merge-validation": "node scripts/pre-merge-validation.js",
     "pre-merge-strict": "node scripts/pre-merge-validation.js --strict --fail-on-warnings",
-    "claude-integration": "bash scripts/claude-integration.sh"
+    "claude-integration": "bash scripts/claude-integration.sh",
+    "setup-real-data": "bash scripts/setup-real-data.sh",
+    "test-real-data": "node test-real-data.js",
+    "monitor-ai": "node continuous-ai-monitoring.js",
+    "demo-real": "node src/ai-intelligence/demo.js --real-data",
+    "start-intelligence": "node continuous-ai-monitoring.js"
   },
   "keywords": [
     "ai",
@@ -37,7 +42,11 @@
     "complexity-analysis",
     "automated-validation",
     "pre-merge-validation",
-    "ai-verification"
+    "ai-verification",
+    "real-time-monitoring",
+    "ai-intelligence",
+    "github-api",
+    "arxiv-research"
   ],
   "author": "AI Development Team",
   "license": "MIT",
