@@ -1,6 +1,6 @@
 {
   "name": "ai-development-standards",
-  "version": "1.9.0",
+  "version": "1.9.1",
   "description": "Shared development standards, architecture patterns, and best practices for AI-human collaborative development with Claude Desktop context optimization",
   "scripts": {
     "validate": "node scripts/validate-standards.js",
@@ -13,10 +13,12 @@
     "test:real-data": "node test-real-data.js",
     "test:quick": "node quick-fix-test.js",
     "test:all": "npm run test && npm run test:real-data",
+    "test:auto-healing": "bash scripts/test-auto-healing-integration.sh",
     "check-context": "npm run validate-context",
     "check-links": "echo 'Link checking requires markdown-link-check: npm install -g markdown-link-check'",
     "setup": "echo 'AI Development Standards ready to use! Run: npm run test'",
     "health-check": "npm run validate && npm run validate-context && npm run test:unit",
+    "health-check-auto-healing": "npm run test:auto-healing && npm run health-check",
     "refactor-analysis": "node scripts/refactor-large-files.js",
     "refactor-large-files": "node scripts/refactor-large-files.js --apply",
     "complexity-check": "node scripts/refactor-large-files.js --no-report",
@@ -24,14 +26,18 @@
     "pre-merge-validation": "node scripts/pre-merge-validation.js",
     "pre-merge-strict": "node scripts/pre-merge-validation.js --strict --fail-on-warnings",
     "pre-merge": "npm run test:unit && npm run pre-merge-validation",
+    "pre-merge-auto-healing": "npm run test:auto-healing && npm run pre-merge",
     "claude-integration": "bash scripts/claude-integration.sh",
     "setup-real-data": "bash scripts/setup-real-data.sh",
     "monitor-ai": "node continuous-ai-monitoring.js",
     "demo-real": "node src/ai-intelligence/demo.js --real-data",
     "start-intelligence": "node continuous-ai-monitoring.js",
     "dev": "npm run test:unit && npm run test:integration",
+    "dev-auto-healing": "npm run test:auto-healing && npm run dev",
     "prod-ready": "NODE_ENV=production npm run test:all && npm run pre-merge-strict",
-    "log-collaboration": "node scripts/log-collaboration-session.js"
+    "prod-ready-auto-healing": "npm run test:auto-healing && npm run prod-ready",
+    "log-collaboration": "node scripts/log-collaboration-session.js",
+    "validate-auto-healing": "source scripts/auto-healing-commons.sh && validate_auto_healing_compliance"
   },
   "keywords": [
     "ai",
@@ -60,7 +66,10 @@
     "lazy-loading",
     "production-ready",
     "self-healing",
-    "collaboration-logging"
+    "collaboration-logging",
+    "auto-healing",
+    "mandatory-automation",
+    "standards-compliance"
   ],
   "author": "AI Development Team",
   "license": "MIT",
@@ -82,10 +91,16 @@
     "test:real-data": "Test with real GitHub/arXiv APIs",
     "test:quick": "Quick test to verify system works",
     "test:all": "Complete test suite including real APIs",
+    "test:auto-healing": "Test complete auto-healing workflow and compliance",
     "health-check": "Quick system health validation",
+    "health-check-auto-healing": "Health check including auto-healing validation",
     "pre-merge": "Pre-merge validation with unit tests",
+    "pre-merge-auto-healing": "Pre-merge validation including auto-healing compliance",
     "dev": "Development workflow (unit + integration tests)",
+    "dev-auto-healing": "Development workflow with auto-healing validation",
     "prod-ready": "Production readiness validation",
-    "log-collaboration": "Log AI collaboration session for Community Wisdom Engine"
+    "prod-ready-auto-healing": "Production readiness with auto-healing compliance",
+    "log-collaboration": "Log AI collaboration session for Community Wisdom Engine",
+    "validate-auto-healing": "Validate auto-healing compliance and standards adherence"
   }
 }
