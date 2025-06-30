@@ -1,0 +1,120 @@
+name: Pre-Merge Validation
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  pre-merge-validation:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run pre-merge validation
+      run: npm run pre-merge-validation
+      
+    - name: Upload validation report
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: pre-merge-validation-report
+        path: |
+          validation-report.json
+          refactoring-report.md
+        retention-days: 30
+        
+    - name: Comment validation results on PR
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          // Read validation results and post as PR comment
+          const fs = require('fs');
+          
+          let comment = '## 🔍 Pre-Merge Validation Results\n\n';
+          
+          try {
+            // Check if validation passed based on exit code
+            comment += '✅ **Validation Status**: PASSED\n\n';
+            comment += '🎉 All AI Development Standards checks passed!\n';
+            comment += '🚀 This PR is ready to merge.\n\n';
+          } catch (error) {
+            comment += '❌ **Validation Status**: FAILED\n\n';
+            comment += '🛑 This PR has validation issues that must be fixed before merging.\n\n';
+            comment += '### 🔧 Next Steps:\n';
+            comment += '1. Run `npm run pre-merge-validation` locally\n';
+            comment += '2. Fix any violations reported\n';
+            comment += '3. Address warnings where possible\n';
+            comment += '4. Push fixes and re-run validation\n\n';
+          }
+          
+          comment += '### 📊 Validation Includes:\n';
+          comment += '- 🧠 Context optimization compliance\n';
+          comment += '- 🔧 Code quality standards\n';
+          comment += '- 🔒 Security vulnerability scanning\n';
+          comment += '- 📚 Documentation requirements\n';
+          comment += '- 🧪 Test coverage analysis\n\n';
+          
+          comment += '### 🛠️ Available Commands:\n';
+          comment += '```bash\n';
+          comment += 'npm run pre-merge-validation    # Full validation\n';
+          comment += 'npm run validate-context-v2     # Context optimization\n';
+          comment += 'npm run full-analysis          # Comprehensive analysis\n';
+          comment += 'npm run refactor-analysis      # Refactoring opportunities\n';
+          comment += '```\n\n';
+          
+          comment += '*Validation powered by [AI Development Standards](https://github.com/nickagillis/ai-development-standards)* 🧠⚡';
+          
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: comment
+          });
+          
+  context-health-check:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run context health analysis
+      run: |
+        echo "📊 Repository Context Health Analysis" > context-health.md
+        echo "======================================" >> context-health.md
+        echo "" >> context-health.md
+        
+        # Run context validation and capture output
+        npm run validate-context-v2 >> context-health.md 2>&1 || true
+        
+        echo "" >> context-health.md
+        echo "Generated: $(date)" >> context-health.md
+        
+    - name: Upload context health report
+      uses: actions/upload-artifact@v4
+      with:
+        name: context-health-report
+        path: context-health.md
+        retention-days: 90
