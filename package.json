@@ -30,7 +30,8 @@
     "demo-real": "node src/ai-intelligence/demo.js --real-data",
     "start-intelligence": "node continuous-ai-monitoring.js",
     "dev": "npm run test:unit && npm run test:integration",
-    "prod-ready": "NODE_ENV=production npm run test:all && npm run pre-merge-strict"
+    "prod-ready": "NODE_ENV=production npm run test:all && npm run pre-merge-strict",
+    "log-collaboration": "node scripts/log-collaboration-session.js"
   },
   "keywords": [
     "ai",
@@ -57,7 +58,9 @@
     "arxiv-research",
     "circular-dependency-fix",
     "lazy-loading",
-    "production-ready"
+    "production-ready",
+    "self-healing",
+    "collaboration-logging"
   ],
   "author": "AI Development Team",
   "license": "MIT",
@@ -82,6 +85,7 @@
     "health-check": "Quick system health validation",
     "pre-merge": "Pre-merge validation with unit tests",
     "dev": "Development workflow (unit + integration tests)",
-    "prod-ready": "Production readiness validation"
+    "prod-ready": "Production readiness validation",
+    "log-collaboration": "Log AI collaboration session for Community Wisdom Engine"
   }
 }
