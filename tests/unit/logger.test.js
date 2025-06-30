@@ -10,8 +10,8 @@
  */
 
 const assert = require('assert');
-const { Logger, getLogger, createSimpleLogger } = require('../src/utils/logger');
-const { resetConfig } = require('../src/config/wisdom-engine.config');
+const { Logger, getLogger, createSimpleLogger } = require('../../src/utils/logger');
+const { resetConfig } = require('../../src/config/wisdom-engine.config');
 
 /**
  * Test Suite: Logger Initialization
