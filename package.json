@@ -1,15 +1,20 @@
 {
   "name": "ai-development-standards",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "Shared development standards, architecture patterns, and best practices for AI-human collaborative development with Claude Desktop context optimization",
   "scripts": {
     "validate": "node scripts/validate-standards.js",
     "validate-context": "node scripts/validate-context.js",
+    "validate-context-v2": "node scripts/validate-context-v2.js",
     "test": "npm run validate",
     "check-context": "npm run validate-context",
     "check-links": "echo 'Link checking requires markdown-link-check: npm install -g markdown-link-check'",
     "setup": "echo 'AI Development Standards ready to use! Run: npm run validate'",
-    "health-check": "npm run validate && npm run validate-context"
+    "health-check": "npm run validate && npm run validate-context",
+    "refactor-analysis": "node scripts/refactor-large-files.js",
+    "refactor-large-files": "node scripts/refactor-large-files.js --apply",
+    "complexity-check": "node scripts/refactor-large-files.js --no-report",
+    "full-analysis": "npm run health-check && npm run refactor-analysis"
   },
   "keywords": [
     "ai",
@@ -24,7 +29,10 @@
     "context-optimization",
     "claude-desktop",
     "modular-design",
-    "micro-modules"
+    "micro-modules",
+    "refactoring",
+    "complexity-analysis",
+    "automated-validation"
   ],
   "author": "AI Development Team",
   "license": "MIT",
@@ -34,5 +42,8 @@
   },
   "engines": {
     "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0"
   }
 }
