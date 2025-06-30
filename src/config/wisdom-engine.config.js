@@ -149,9 +149,18 @@ class WisdomEngineConfig {
       return; // Optional value, skip validation
     }
 
-    // Type validation
-    if (rules.type && typeof value !== rules.type) {
-      throw new Error(`Configuration ${key} must be of type ${rules.type}, got ${typeof value}`);
+    // Type validation - Fixed to handle arrays properly
+    if (rules.type) {
+      let actualType;
+      if (rules.type === 'array') {
+        actualType = Array.isArray(value) ? 'array' : typeof value;
+      } else {
+        actualType = typeof value;
+      }
+      
+      if (actualType !== rules.type) {
+        throw new Error(`Configuration ${key} must be of type ${rules.type}, got ${actualType}`);
+      }
     }
 
     // Enum validation
