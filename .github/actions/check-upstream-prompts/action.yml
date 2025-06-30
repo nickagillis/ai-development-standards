@@ -1,0 +1,47 @@
+name: 'Check Upstream Prompts'
+description: 'Check for upstream prompt improvements'
+outputs:
+  changes_detected:
+    description: 'Whether changes were detected'
+    value: ${{ steps.check.outputs.changes_detected }}
+  upstream_version:
+    description: 'Upstream version number'
+    value: ${{ steps.check.outputs.upstream_version }}
+  current_version:
+    description: 'Current version number'
+    value: ${{ steps.check.outputs.current_version }}
+
+runs:
+  using: 'composite'
+  steps:
+  - name: Check for prompt updates
+    id: check
+    shell: bash
+    run: |
+      echo "Checking for upstream prompt improvements..."
+      
+      # Check if prompt files have been updated upstream
+      PROMPT_CHANGES=$(git diff HEAD upstream/main --name-only | grep -E "(docs/ai-integration-prompts|docs/prompt-changelog)" || echo "")
+      
+      if [ -n "$PROMPT_CHANGES" ]; then
+        echo "🚀 Upstream prompt improvements detected!"
+        echo "changes_detected=true" >> $GITHUB_OUTPUT
+        
+        # Get latest upstream version
+        UPSTREAM_VERSION=$(git show upstream/main:docs/ai-integration-prompts-core.md | grep "# AI Integration Prompts v" | head -1 | grep -o "v[0-9]\+\.[0-9]\+" || echo "unknown")
+        CURRENT_VERSION=$(git show HEAD:docs/ai-integration-prompts-core.md | grep "# AI Integration Prompts v" | head -1 | grep -o "v[0-9]\+\.[0-9]\+" || echo "unknown")
+        
+        echo "upstream_version=$UPSTREAM_VERSION" >> $GITHUB_OUTPUT
+        echo "current_version=$CURRENT_VERSION" >> $GITHUB_OUTPUT
+        
+        # Generate summary of changes
+        echo "📝 Changed files:" > /tmp/changes_summary.txt
+        echo "$PROMPT_CHANGES" | sed 's/^/  - /' >> /tmp/changes_summary.txt
+        echo "" >> /tmp/changes_summary.txt
+        echo "📋 Version update: $CURRENT_VERSION → $UPSTREAM_VERSION" >> /tmp/changes_summary.txt
+        
+        cat /tmp/changes_summary.txt
+      else
+        echo "✅ No upstream prompt changes detected"
+        echo "changes_detected=false" >> $GITHUB_OUTPUT
+      fi

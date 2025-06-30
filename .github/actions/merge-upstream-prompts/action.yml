@@ -1,0 +1,85 @@
+name: 'Merge Upstream Prompts'
+description: 'Create branch and merge upstream prompt changes'
+inputs:
+  upstream_version:
+    description: 'Upstream version'
+    required: true
+  current_version:
+    description: 'Current version'
+    required: true
+  change_type:
+    description: 'Change type'
+    required: true
+  org_customizations:
+    description: 'Org customizations flag'
+    required: true
+  urgency:
+    description: 'Urgency level'
+    required: true
+
+runs:
+  using: 'composite'
+  steps:
+  - name: Create update branch
+    shell: bash
+    run: |
+      UPDATE_DATE=$(date +%Y%m%d)
+      BRANCH_NAME="upstream-prompt-updates-$UPDATE_DATE"
+      
+      git config user.name "GitHub Action"
+      git config user.email "action@github.com"
+      
+      git checkout -b "$BRANCH_NAME"
+      echo "BRANCH_NAME=$BRANCH_NAME" >> $GITHUB_ENV
+      
+  - name: Merge upstream changes
+    shell: bash
+    run: |
+      echo "Merging upstream prompt improvements..."
+      
+      # Merge changelog
+      git checkout upstream/main -- docs/prompt-changelog-core.md
+      
+      # Handle prompts based on customizations
+      if [ "${{ inputs.org_customizations }}" = "true" ]; then
+        echo "⚠️  Creating backup for organizational customizations"
+        cp docs/ai-integration-prompts-core.md docs/ai-integration-prompts-core.md.backup
+        git checkout upstream/main -- docs/ai-integration-prompts-core.md
+        
+        cat >> .upstream-merge-notes.md << EOF
+      # Manual Review Required
+      Organizational customizations backed up to:
+      - docs/ai-integration-prompts-core.md.backup
+      
+      Please re-apply customizations after reviewing upstream changes.
+      EOF
+      else
+        git checkout upstream/main -- docs/ai-integration-prompts-core.md
+      fi
+      
+      git add .
+      git commit -m "🔄 Merge upstream prompt updates ${{ inputs.upstream_version }}"
+      
+  - name: Create Pull Request
+    uses: peter-evans/create-pull-request@v5
+    with:
+      token: ${{ github.token }}
+      branch: ${{ env.BRANCH_NAME }}
+      title: "🔄 Upstream AI Prompt Updates - ${{ inputs.upstream_version }}"
+      body: |
+        ## 🚀 Upstream Prompt Updates
+        
+        **Version:** ${{ inputs.current_version }} → ${{ inputs.upstream_version }}
+        **Type:** ${{ inputs.change_type }}
+        **Urgency:** ${{ inputs.urgency }}
+        
+        ${{ inputs.org_customizations == 'true' && '**⚠️ Manual Review Required** - Backup created' || '**✅ Safe to Merge**' }}
+        
+        ### Resources
+        - [Core Prompts](docs/ai-integration-prompts-core.md)
+        - [Changelog](docs/prompt-changelog-core.md)
+        - [Community Support](https://github.com/nickagillis/ai-development-standards/discussions)
+      labels: |
+        prompt-update
+        upstream-sync
+        ${{ inputs.urgency }}
