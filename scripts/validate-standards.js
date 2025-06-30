@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { ContextValidator } = require('./validate-context');
 
 class StandardsValidator {
   constructor() {
@@ -17,6 +18,7 @@ class StandardsValidator {
     await this.validateTemplates();
     await this.validateConfigurations();
     await this.validateCommunityWisdomEngine();
+    await this.validateContextOptimization();
     
     this.printResults();
   }
@@ -29,6 +31,7 @@ class StandardsValidator {
       'README.md',
       'architecture/requirements.md',
       'architecture/memory-patterns.md',
+      'architecture/modular-design.md',
       'checklists/pre-development.md',
       'checklists/code-review.md',
       'checklists/merge-readiness.md',
@@ -38,7 +41,9 @@ class StandardsValidator {
       'docs/how-to-use.md',
       'docs/standards-validation.md',
       'docs/validation-framework.md',
-      'docs/community-wisdom-engine.md'
+      'docs/community-wisdom-engine.md',
+      'docs/context-optimization.md',
+      'docs/handoff-instructions.md'
     ];
     
     for (const file of requiredFiles) {
@@ -47,7 +52,8 @@ class StandardsValidator {
     
     // Check template files
     const templateFiles = [
-      'templates/node-api/README.md'
+      'templates/node-api/README.md',
+      'templates/micro-module/README.md'
     ];
     
     for (const file of templateFiles) {
@@ -60,7 +66,8 @@ class StandardsValidator {
     
     // Check if template directories exist
     const templateDirs = [
-      'templates/node-api'
+      'templates/node-api',
+      'templates/micro-module'
     ];
     
     for (const dir of templateDirs) {
@@ -73,6 +80,19 @@ class StandardsValidator {
           this.pass(`Template has README: ${dir}`);
         } else {
           this.fail(`Template missing README: ${dir}`);
+        }
+        
+        // Check micro-module template completeness
+        if (dir === 'templates/micro-module') {
+          const requiredFiles = ['index.js', 'config.js', 'utils.js', 'test.js'];
+          for (const file of requiredFiles) {
+            const filePath = path.join(dir, file);
+            if (fs.existsSync(filePath)) {
+              this.pass(`Micro-module template has ${file}`);
+            } else {
+              this.fail(`Micro-module template missing ${file}`);
+            }
+          }
         }
       } else {
         this.fail(`Template directory missing: ${dir}`);
@@ -128,6 +148,58 @@ class StandardsValidator {
     }
   }
 
+  async validateContextOptimization() {
+    console.log('🧠 Validating Context Optimization Framework...');
+    
+    try {
+      // Check if context optimization files exist
+      this.checkFileExists('docs/context-optimization.md');
+      this.checkFileExists('architecture/modular-design.md');
+      this.checkFileExists('scripts/validate-context.js');
+      
+      // Run context validation on the standards repository itself
+      const contextValidator = new ContextValidator({
+        rootPath: process.cwd(),
+        strictMode: false
+      });
+      
+      const contextResults = await contextValidator.validateProject();
+      
+      if (contextResults.isValid()) {
+        this.pass('Context optimization standards met');
+        this.pass(`Context health score: ${contextResults.getScore()}/100`);
+      } else {
+        this.fail(`Context violations found: ${contextResults.violations.length} files exceed limits`);
+        
+        // Show top violations
+        const topViolations = contextResults.violations.slice(0, 3);
+        for (const violation of topViolations) {
+          this.fail(`${path.basename(violation.file)}: ${violation.actual} > ${violation.limit} lines`);
+        }
+      }
+      
+      // Check context health metrics
+      if (contextResults.metrics.averageFileSize <= 80) {
+        this.pass(`Good average file size: ${contextResults.metrics.averageFileSize} lines`);
+      } else {
+        this.fail(`High average file size: ${contextResults.metrics.averageFileSize} lines`);
+      }
+      
+      // Check for context optimization in README
+      if (fs.existsSync('README.md')) {
+        const readmeContent = fs.readFileSync('README.md', 'utf8');
+        if (readmeContent.includes('Context Optimization') || readmeContent.includes('context optimization')) {
+          this.pass('README.md includes context optimization documentation');
+        } else {
+          this.fail('README.md missing context optimization references');
+        }
+      }
+      
+    } catch (error) {
+      this.fail(`Context validation failed: ${error.message}`);
+    }
+  }
+
   findJsonFiles(dir) {
     const jsonFiles = [];
     
@@ -177,13 +249,16 @@ class StandardsValidator {
       console.log('\n💡 Next steps:');
       console.log('  1. Review the failed validations above');
       console.log('  2. Create missing files or fix issues');
-      console.log('  3. Run validation again: node scripts/validate-standards.js');
+      console.log('  3. Run validation again: npm run validate');
+      console.log('  4. For context issues: npm run validate-context');
       
       process.exit(1);
     } else {
       console.log('\n🎉 All standards validated successfully!');
       console.log('\n✅ Your AI development standards are ready to use.');
       console.log('\n🧠 Community Wisdom Engine: Red Zone experimental dependency properly integrated');
+      console.log('\n🧠 Context Optimization: Framework validated and ready for use');
+      console.log('\n🚀 Ready to apply these standards to workspace monitoring project!');
     }
   }
 }
