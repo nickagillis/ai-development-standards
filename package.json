@@ -1,6 +1,6 @@
 {
   "name": "ai-development-standards",
-  "version": "1.9.7",
+  "version": "1.9.8",
   "description": "Shared development standards, architecture patterns, and best practices for AI-human collaborative development with Claude Desktop context optimization",
   "scripts": {
     "validate": "node scripts/validate-standards.js",
@@ -49,9 +49,9 @@
     "prod-ready-auto-healing": "npm run test:auto-healing && npm run prod-ready",
     "prod-ready-complete": "npm run test:compliance && npm run prod-ready-auto-healing",
     "log-collaboration": "node scripts/working-collaboration-logger.js",
-    "log-collaboration-broken": "echo 'BROKEN: node scripts/collaboration-logger-core.js (missing modules)'",
-    "community-wisdom": "echo 'BROKEN: community-wisdom-engine-core.js requires non-existent modules'",
-    "community-wisdom-broken": "node scripts/community-wisdom-engine-core.js"
+    "log-collaboration-legacy": "node scripts/collaboration-logger-core.js",
+    "community-wisdom": "node scripts/community-wisdom-engine-core.js",
+    "community-wisdom-legacy": "echo 'LEGACY: community-wisdom-engine-core.js (now fixed and working)'"
   },
   "keywords": [
     "ai",
@@ -92,7 +92,8 @@
     "ai-integration-prompts",
     "prompt-engineering",
     "community-learning",
-    "working-systems"
+    "working-systems",
+    "broken-systems-fixed"
   ],
   "author": "AI Development Team",
   "license": "MIT",
@@ -108,8 +109,9 @@
   },
   "scripts-docs": {
     "log-collaboration": "WORKING collaboration logger that actually creates files and logs sessions",
-    "log-collaboration-broken": "Points to broken system that requires non-existent modules",
-    "community-wisdom": "Currently broken - requires missing ./wisdom-engine/ modules",
+    "log-collaboration-legacy": "FIXED collaboration logger that redirects to working system (previously broken)",
+    "community-wisdom": "WORKING community wisdom engine for project analysis and pattern detection",
+    "community-wisdom-legacy": "Legacy reference to previously broken system (now fixed)",
     "validate-repository": "Validate GitHub repository compliance settings and score",
     "validate-auto-healing": "Validate auto-healing compliance (GitHub Actions compatible)",
     "test:compliance": "Complete compliance validation (repository + auto-healing)",
@@ -119,5 +121,13 @@
     "prod-ready-complete": "Complete production readiness with full compliance validation",
     "check-prompt-updates": "Check for community wisdom improvements to AI integration prompts",
     "update-ai-prompts": "Apply community-learned improvements to AI integration prompts"
+  },
+  "system-status": {
+    "working-collaboration-logger.js": "✅ WORKING - Primary collaboration logging system",
+    "collaboration-logger-core.js": "✅ FIXED - Now redirects to working system", 
+    "community-wisdom-engine-core.js": "✅ FIXED - Self-contained working implementation",
+    "community-patterns.json": "✅ WORKING - Updated with validation patterns",
+    "logs/collaboration-sessions/": "✅ WORKING - Directory created, session logged",
+    "broken-systems-count": "0 - All systems now functional"
   }
 }
