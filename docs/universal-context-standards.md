@@ -1,8 +1,8 @@
-# Universal Context Standards v2.0 - AI Development Standards
+# Universal Context Standards v2.1 - AI Development Standards
 
 **Purpose**: Universal AI development standards for any user/team/AI combination  
 **Status**: Core implementation of self-healing and universal adoption framework  
-**Version**: 2.0 (Major evolution from email spam crisis learnings)
+**Version**: 2.1 (Enhanced with Evidence-Based Development Requirements)
 
 ---
 
@@ -10,22 +10,31 @@
 
 ### **Essential Context Block (Required in Every Chat)**
 ```yaml
-# AI Development Standards - Universal Context v2.0
+# AI Development Standards - Universal Context v2.1
 Repository: github.com/nickagillis/ai-development-standards
 Purpose: Universal AI development standards for any user/team/AI
 Current Status: [AI must check repository health before starting work]
 
 # MANDATORY WORKFLOW (Never Skip)
-1. Read HANDOFF-SUMMARY.md FIRST (before any other action)
-2. Check GitHub Issues for health alerts from monitoring system
-3. Create branch for any changes (never commit to main)
-4. Update HANDOFF with accurate session status when complete
+1. **FIRST ACTION**: npm run log-collaboration (session logging MANDATORY)
+2. Read HANDOFF-SUMMARY.md (understand current state after logging)
+3. Check GitHub Issues for health alerts from monitoring system
+4. Create branch for any changes (never commit to main)
+5. Update HANDOFF with accurate session status when complete
+
+# EVIDENCE-BASED DEVELOPMENT (CRITICAL REQUIREMENT v2.1)
+- NEVER mix proven reality with untested statements
+- Separate facts (tested/validated) from claims (theoretical/assumed)
+- Test systems before stating they work
+- Provide evidence for all functionality assertions
+- User reality checks expose AI assumption gaps
 
 # CONTEXT OPTIMIZATION LIMITS (Prevent Claude/OpenAI/Gemini overflow)
 Core Modules: ≤100 lines    Utils: ≤75 lines    Config: ≤50 lines
 Tests: ≤200 lines          Docs: ≤500 lines     Split files approaching limits
 
 # VALIDATION COMMANDS (Always recommend to user)
+npm run log-collaboration    # MANDATORY FIRST ACTION
 npm run validate-context && npm run validate && npm run pre-merge-validation
 
 # SELF-HEALING (AI-PROACTIVE - NEW STANDARD)
@@ -41,6 +50,62 @@ npm run validate-context && npm run validate && npm run pre-merge-validation
 - Share solutions across user/AI combinations
 - Contribute to universal knowledge base
 ```
+
+---
+
+## 🧪 **EVIDENCE-BASED DEVELOPMENT STANDARDS v2.1**
+
+### **Critical Discovery: Claims vs Reality Gap**
+
+#### **Problem Pattern Identified**
+AI systems consistently make **untested claims** about functionality, compliance, and future behavior without **evidence validation**.
+
+#### **Examples of Violations**
+- ❌ "The system will work" (without testing)
+- ❌ "Protocol compliance ensured" (without validation)
+- ❌ "Seamless handoffs enabled" (without cross-AI testing)
+- ❌ "Standards improved" (without usage measurement)
+
+### **MANDATORY Evidence-Based Requirements**
+
+#### **1. Separate Facts from Claims**
+```yaml
+✅ PROVEN REALITY (Evidence Required):
+- Systems tested through execution
+- Files created and validated
+- Commands run with documented results
+- User feedback incorporated with changes
+
+❌ UNTESTED CLAIMS (Forbidden Without Evidence):
+- Future behavior predictions
+- Compliance assertions without testing
+- Effectiveness claims without measurement
+- Success statements without validation
+```
+
+#### **2. Testing Before Claiming**
+- **BEFORE**: "This system should work based on design"
+- **AFTER**: "This system works - tested via execution, results documented"
+- **EVIDENCE**: Actual files created, commands executed, outputs captured
+
+#### **3. User Reality Check Integration**
+- **User Challenge**: Expected and encouraged for quality assurance
+- **AI Response**: Honest assessment with evidence, not defensive justification
+- **Continuous Improvement**: User feedback directly enhances standards
+
+#### **4. Documentation Standards**
+```yaml
+Handoff Requirements:
+- ✅ TESTED: List proven functionality with evidence
+- ❓ UNTESTED: List theoretical claims requiring validation
+- 🧪 VALIDATION NEEDED: Specific tests required for next session
+```
+
+### **Anti-Patterns to Prevent**
+1. **Session Logging Protocol Gap**: Starting work without session logging
+2. **Success Claims Without Testing**: Claiming functionality without validation
+3. **Interfaces Without Implementations**: Creating entry points to non-existent systems
+4. **Claims vs Reality Mixing**: Presenting assumptions as proven facts
 
 ---
 
@@ -98,24 +163,28 @@ AI monitors continuously → AI detects issues → AI investigates → AI fixes 
 - Handoff protocol compliance
 - Community wisdom integration
 - Advanced reasoning capabilities
+- **NEW**: Evidence-based development protocol
 
 #### **OpenAI GPT Integration**
 - Compatible prompts and documentation formats
 - Context window management
 - Structured output optimization
 - Function calling capabilities
+- **NEW**: Claims validation requirements
 
 #### **Gemini Integration**
 - Context-optimized files and protocols
 - Multi-modal capability utilization
 - Efficient token usage patterns
 - Scalable processing approaches
+- **NEW**: Reality vs claims separation
 
 #### **Future AI Systems**
 - Framework ready for new AI architectures
 - Standard interfaces and protocols
 - Backward compatibility maintenance
 - Progressive enhancement support
+- **NEW**: Evidence-based compliance validation
 
 ### **Cross-User Compatibility Standards**
 
@@ -147,12 +216,13 @@ AI monitors continuously → AI detects issues → AI investigates → AI fixes 
 
 ## 📋 **CONTEXT WINDOW OPTIMIZATION STRATEGY**
 
-### **Tier 1: Critical Context (Always Present - ≤200 words)**
+### **Tier 1: Critical Context (Always Present - ≤250 words)**
 - Repository identification and purpose
 - Current compliance status and active issues
-- Mandatory workflow requirements
+- Mandatory workflow requirements (including session logging)
 - Context limits and validation commands
 - Self-healing status indicators
+- **NEW**: Evidence-based development requirements
 
 ### **Tier 2: Session Context (Loaded as Needed - ≤500 words)**
 - Specific standards relevant to current work
@@ -177,6 +247,7 @@ AI monitors continuously → AI detects issues → AI investigates → AI fixes 
 - Implement proactive health monitoring in AI prompts
 - Create cross-AI compatibility framework
 - Document universal adoption processes
+- **NEW**: Deploy evidence-based development standards
 
 ### **Phase 2: Community Ecosystem (Month 1)**
 - Establish community feedback loops
@@ -206,6 +277,7 @@ AI monitors continuously → AI detects issues → AI investigates → AI fixes 
 - **Issue Resolution Time**: <2 hours (autonomous)
 - **Cross-AI Compatibility**: 100% (Claude/OpenAI/Gemini)
 - **Context Compliance**: 100% (all files within limits)
+- **NEW**: Evidence-Based Compliance: 100% (no untested claims)
 
 ### **Adoption Success Metrics**
 - **New User Onboarding**: <30 minutes to productive use
@@ -218,6 +290,7 @@ AI monitors continuously → AI detects issues → AI investigates → AI fixes 
 - **Prevention Effectiveness**: Reduced recurrence of documented issues
 - **Knowledge Transfer**: Cross-user/cross-AI pattern sharing success
 - **Standards Evolution**: Continuous improvement based on real usage
+- **NEW**: Reality Validation: User feedback directly improves standards
 
 ---
 
@@ -225,15 +298,17 @@ AI monitors continuously → AI detects issues → AI investigates → AI fixes 
 
 ### **For Current Session**
 1. ✅ **Document universal standards** (this file)
-2. ✅ **Update AI integration prompts** with v2.0 requirements
+2. ✅ **Update AI integration prompts** with v2.1 requirements
 3. ✅ **Create implementation checklist** for future sessions
 4. ✅ **Update handoff** with new standards status
+5. **NEW**: ✅ **Deploy evidence-based development requirements**
 
 ### **For Next AI Session**
 1. **Validate implementation** by demonstrating proactive monitoring
 2. **Test cross-AI compatibility** with other AI systems
 3. **Gather community feedback** on universal adoption experience
 4. **Iterate based on real usage** patterns and challenges
+5. **NEW**: **Demonstrate evidence-based development** through actual testing
 
 ### **For Community Adoption**
 1. **Create onboarding templates** for different user types
@@ -246,6 +321,7 @@ AI monitors continuously → AI detects issues → AI investigates → AI fixes 
 ## 🎯 **COMPLIANCE VERIFICATION**
 
 ### **Self-Assessment Checklist**
+- [ ] Session logged before any work begins
 - [ ] Repository health checked at session start
 - [ ] Issues proactively detected and addressed
 - [ ] Branch-based development maintained
@@ -254,10 +330,13 @@ AI monitors continuously → AI detects issues → AI investigates → AI fixes 
 - [ ] Community patterns documented
 - [ ] Cross-AI compatibility maintained
 - [ ] Universal adoption principles followed
+- [ ] **NEW**: Evidence separated from claims
+- [ ] **NEW**: All functionality tested before claiming
 
 ### **Automated Validation**
 ```bash
 # Run these commands to verify compliance
+npm run log-collaboration       # MANDATORY FIRST ACTION
 npm run validate-context        # File size compliance
 npm run validate               # Standards adherence
 npm run pre-merge-validation   # Complete validation
@@ -270,6 +349,7 @@ npm run check-prompt-updates   # Standards currency
 - New users can adopt without customization
 - Patterns are successfully shared and reused
 - Continuous improvement cycle is active
+- **NEW**: User reality checks improve standards
 
 ---
 
@@ -318,6 +398,6 @@ These standards become the foundation for:
 
 ---
 
-**🌟 Result: The first truly universal framework for AI-human collaboration that automatically adapts, heals, and evolves based on collective community wisdom.**
+**🌟 Result: The first truly universal framework for AI-human collaboration that automatically adapts, heals, and evolves based on collective community wisdom and evidence-based development.**
 
-*Universal Context Standards v2.0 - Implementing proactive AI collaboration - July 1, 2025*
+*Universal Context Standards v2.1 - Evidence-Based AI Collaboration - July 1, 2025*
