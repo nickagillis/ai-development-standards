@@ -1,6 +1,6 @@
 {
   "name": "ai-development-standards",
-  "version": "1.9.6",
+  "version": "1.9.7",
   "description": "Shared development standards, architecture patterns, and best practices for AI-human collaborative development with Claude Desktop context optimization",
   "scripts": {
     "validate": "node scripts/validate-standards.js",
@@ -48,8 +48,10 @@
     "prod-ready": "NODE_ENV=production npm run test:all && npm run pre-merge-strict",
     "prod-ready-auto-healing": "npm run test:auto-healing && npm run prod-ready",
     "prod-ready-complete": "npm run test:compliance && npm run prod-ready-auto-healing",
-    "log-collaboration": "node scripts/collaboration-logger-core.js",
-    "community-wisdom": "node scripts/community-wisdom-engine-core.js"
+    "log-collaboration": "node scripts/working-collaboration-logger.js",
+    "log-collaboration-broken": "echo 'BROKEN: node scripts/collaboration-logger-core.js (missing modules)'",
+    "community-wisdom": "echo 'BROKEN: community-wisdom-engine-core.js requires non-existent modules'",
+    "community-wisdom-broken": "node scripts/community-wisdom-engine-core.js"
   },
   "keywords": [
     "ai",
@@ -89,7 +91,8 @@
     "github-actions-compatible",
     "ai-integration-prompts",
     "prompt-engineering",
-    "community-learning"
+    "community-learning",
+    "working-systems"
   ],
   "author": "AI Development Team",
   "license": "MIT",
@@ -104,6 +107,9 @@
     "@types/node": "^20.0.0"
   },
   "scripts-docs": {
+    "log-collaboration": "WORKING collaboration logger that actually creates files and logs sessions",
+    "log-collaboration-broken": "Points to broken system that requires non-existent modules",
+    "community-wisdom": "Currently broken - requires missing ./wisdom-engine/ modules",
     "validate-repository": "Validate GitHub repository compliance settings and score",
     "validate-auto-healing": "Validate auto-healing compliance (GitHub Actions compatible)",
     "test:compliance": "Complete compliance validation (repository + auto-healing)",
