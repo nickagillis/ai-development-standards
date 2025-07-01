@@ -1,0 +1,45 @@
+{
+  "sessionId": "session-systemic-gaps-exposed-1719863700000-def456",
+  "timestamp": "2025-06-30T19:15:00.000Z",
+  "aiModel": "Claude Sonnet 4",
+  "sessionType": "systemic-gaps-discovery-duplicate-work-checking-failure",
+  "mission": {
+    "description": "User identified that duplicate work checking system failed and GitHub error emails need standards integration",
+    "userInsights": [
+      "Duplicate work checking system isn't working either",
+      "Getting GitHub error emails again",
+      "GitHub errors should be part of the standards",
+      "Need prioritization system later"
+    ]
+  },
+  "criticalSystemFailures": {
+    "duplicateWorkChecking": {
+      "failure": "System didn't prevent AI from building redundant wins/losses tracker",
+      "evidence": "community-patterns.json already served this purpose",
+      "impact": "Nearly caused significant overengineering waste"
+    },
+    "githubErrorMonitoring": {
+      "failure": "Error emails reaching user instead of being handled by standards",
+      "evidence": "User receiving GitHub run error notifications",
+      "impact": "Manual intervention required for automated system failures"
+    },
+    "prioritizationSystem": {
+      "gap": "No systematic approach to prioritizing fixes vs new features",
+      "need": "User wants to work on prioritization system",
+      "timing": "Later session focus"
+    }
+  },
+  "systemicIssues": {
+    "preventionSystemsFailure": "Systems designed to prevent problems are themselves problematic",
+    "monitoringGaps": "GitHub automation errors not properly integrated into standards",
+    "workflowInconsistency": "Some systems working (standards compliance) others failing (duplicate prevention)"
+  },
+  "immediateActions": [
+    "Update handoff to document these gaps",
+    "Set context for prioritization system work",
+    "Acknowledge broken duplicate work checking",
+    "Note GitHub error email standards gap"
+  ],
+  "startTime": "2025-06-30T19:15:00.000Z",
+  "status": "DOCUMENTING-SYSTEMIC-GAPS"
+}
