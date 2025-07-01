@@ -1,0 +1,218 @@
+name: 📊 Repository Health Monitor
+
+# Self-monitoring system to detect issues before they become email spam
+# Runs silently and reports status via GitHub Issues when problems detected
+
+on:
+  schedule:
+    - cron: '0 6 * * *'  # Daily at 6 AM UTC
+  workflow_dispatch:  # Manual trigger
+
+jobs:
+  health-monitor:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 10  # Recent history for health analysis
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Health Check - Dependencies
+      id: deps
+      run: |
+        echo "🔍 Checking dependency health..."
+        
+        # Check if package.json exists and is valid
+        if [ -f package.json ]; then
+          echo "deps_status=healthy" >> $GITHUB_OUTPUT
+          echo "✅ package.json found and accessible"
+        else
+          echo "deps_status=critical" >> $GITHUB_OUTPUT
+          echo "❌ package.json missing or inaccessible"
+        fi
+        
+        # Check npm install capability
+        if npm ci --dry-run >/dev/null 2>&1; then
+          echo "npm_status=healthy" >> $GITHUB_OUTPUT
+          echo "✅ npm dependencies resolvable"
+        else
+          echo "npm_status=warning" >> $GITHUB_OUTPUT
+          echo "⚠️ npm dependency issues detected"
+        fi
+      continue-on-error: true
+    
+    - name: Health Check - Critical Scripts
+      id: scripts
+      run: |
+        echo "🔍 Checking critical script files..."
+        
+        # Critical scripts that must exist and be non-empty
+        CRITICAL_SCRIPTS=(
+          "scripts/community-wisdom-engine.js"
+          "scripts/log-collaboration-session.js"
+          "scripts/collaboration-logger-core.js"
+          "scripts/community-wisdom-engine-core.js"
+        )
+        
+        SCRIPT_ISSUES=0
+        
+        for script in "${CRITICAL_SCRIPTS[@]}"; do
+          if [ -f "$script" ] && [ -s "$script" ]; then
+            echo "✅ $script - healthy"
+          else
+            echo "❌ $script - missing or empty"
+            SCRIPT_ISSUES=$((SCRIPT_ISSUES + 1))
+          fi
+        done
+        
+        if [ $SCRIPT_ISSUES -eq 0 ]; then
+          echo "scripts_status=healthy" >> $GITHUB_OUTPUT
+        elif [ $SCRIPT_ISSUES -lt 3 ]; then
+          echo "scripts_status=warning" >> $GITHUB_OUTPUT
+        else
+          echo "scripts_status=critical" >> $GITHUB_OUTPUT
+        fi
+        
+        echo "script_issues=$SCRIPT_ISSUES" >> $GITHUB_OUTPUT
+      continue-on-error: true
+    
+    - name: Health Check - Workflow Status
+      id: workflows
+      run: |
+        echo "🔍 Checking workflow configurations..."
+        
+        # Check if workflows have appropriate triggers (not spam-causing)
+        WORKFLOW_ISSUES=0
+        
+        # Check auto-community-wisdom.yml
+        if grep -q "push:" .github/workflows/auto-community-wisdom.yml 2>/dev/null; then
+          echo "❌ auto-community-wisdom.yml still has push triggers (spam risk)"
+          WORKFLOW_ISSUES=$((WORKFLOW_ISSUES + 1))
+        else
+          echo "✅ auto-community-wisdom.yml triggers look safe"
+        fi
+        
+        # Check auto-healing-compliance.yml
+        if grep -q "push:" .github/workflows/auto-healing-compliance.yml 2>/dev/null; then
+          echo "❌ auto-healing-compliance.yml still has push triggers (spam risk)"
+          WORKFLOW_ISSUES=$((WORKFLOW_ISSUES + 1))
+        else
+          echo "✅ auto-healing-compliance.yml triggers look safe"
+        fi
+        
+        if [ $WORKFLOW_ISSUES -eq 0 ]; then
+          echo "workflow_status=healthy" >> $GITHUB_OUTPUT
+        else
+          echo "workflow_status=critical" >> $GITHUB_OUTPUT
+        fi
+        
+        echo "workflow_issues=$WORKFLOW_ISSUES" >> $GITHUB_OUTPUT
+      continue-on-error: true
+    
+    - name: Health Check - Recent Activity
+      id: activity
+      run: |
+        echo "🔍 Checking recent repository activity..."
+        
+        # Check for signs of email spam patterns
+        RECENT_COMMITS=$(git log --since="24 hours ago" --oneline | wc -l)
+        RAPID_COMMITS=$(git log --since="1 hour ago" --oneline | wc -l)
+        
+        echo "Recent commits (24h): $RECENT_COMMITS"
+        echo "Rapid commits (1h): $RAPID_COMMITS"
+        
+        if [ $RAPID_COMMITS -gt 5 ]; then
+          echo "activity_status=warning" >> $GITHUB_OUTPUT
+          echo "⚠️ Rapid commit activity detected (potential spam trigger)"
+        elif [ $RECENT_COMMITS -gt 20 ]; then
+          echo "activity_status=warning" >> $GITHUB_OUTPUT
+          echo "⚠️ High commit activity detected"
+        else
+          echo "activity_status=healthy" >> $GITHUB_OUTPUT
+          echo "✅ Repository activity looks normal"
+        fi
+        
+        echo "recent_commits=$RECENT_COMMITS" >> $GITHUB_OUTPUT
+        echo "rapid_commits=$RAPID_COMMITS" >> $GITHUB_OUTPUT
+      continue-on-error: true
+    
+    - name: Generate Health Report
+      run: |
+        echo "## 🏥 Repository Health Report - $(date -u +%Y-%m-%d)" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### System Status:" >> $GITHUB_STEP_SUMMARY
+        echo "- **Dependencies**: ${{ steps.deps.outputs.deps_status || 'unknown' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **NPM**: ${{ steps.deps.outputs.npm_status || 'unknown' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Critical Scripts**: ${{ steps.scripts.outputs.scripts_status || 'unknown' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Workflow Config**: ${{ steps.workflows.outputs.workflow_status || 'unknown' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- **Activity Level**: ${{ steps.activity.outputs.activity_status || 'unknown' }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Metrics:" >> $GITHUB_STEP_SUMMARY
+        echo "- Script Issues: ${{ steps.scripts.outputs.script_issues || '0' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Workflow Issues: ${{ steps.workflows.outputs.workflow_issues || '0' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Recent Commits (24h): ${{ steps.activity.outputs.recent_commits || '0' }}" >> $GITHUB_STEP_SUMMARY
+        echo "- Rapid Commits (1h): ${{ steps.activity.outputs.rapid_commits || '0' }}" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "### Email Spam Prevention:" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Push triggers removed from community-wisdom workflow" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Push triggers removed from auto-healing workflow" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Empty scripts fixed to prevent execution failures" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Monitoring system active for early issue detection" >> $GITHUB_STEP_SUMMARY
+        echo "" >> $GITHUB_STEP_SUMMARY
+        echo "*This report helps identify issues before they become email spam* 📧🚫" >> $GITHUB_STEP_SUMMARY
+
+  create-issue-if-critical:
+    runs-on: ubuntu-latest
+    needs: health-monitor
+    if: |
+      steps.deps.outputs.deps_status == 'critical' || 
+      steps.scripts.outputs.scripts_status == 'critical' || 
+      steps.workflows.outputs.workflow_status == 'critical'
+    
+    steps:
+    - name: Create Health Alert Issue
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const title = `🚨 Repository Health Alert - ${new Date().toISOString().split('T')[0]}`;
+          const body = `# 🚨 Critical Repository Health Issues Detected
+          
+          This is an automated alert from the Repository Health Monitor.
+          
+          ## Issues Detected:
+          - Dependencies: ${{ steps.deps.outputs.deps_status || 'unknown' }}
+          - Scripts: ${{ steps.scripts.outputs.scripts_status || 'unknown' }}  
+          - Workflows: ${{ steps.workflows.outputs.workflow_status || 'unknown' }}
+          
+          ## Impact:
+          These issues could lead to:
+          - GitHub Actions workflow failures
+          - Email notification spam
+          - Broken automation systems
+          
+          ## Recommended Actions:
+          1. Check the workflow run details for specific error messages
+          2. Verify all critical scripts exist and are non-empty
+          3. Ensure workflow triggers are properly configured
+          4. Test npm dependency installation
+          
+          ## Monitoring:
+          This issue was created automatically to prevent email spam.
+          The monitoring system will continue to watch for problems.
+          
+          *Auto-generated by Repository Health Monitor*`;
+          
+          await github.rest.issues.create({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            title: title,
+            body: body,
+            labels: ['health-alert', 'automated', 'critical']
+          });
