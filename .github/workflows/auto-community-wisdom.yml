@@ -1,0 +1,164 @@
+name: 📊 Automatic Community Wisdom Logging
+
+# Automatically capture development patterns and successful workflows
+# No Node.js required - runs in GitHub Actions for all users
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    types: [opened, closed]
+  workflow_dispatch:
+  schedule:
+    - cron: '0 12 * * 0'  # Weekly pattern analysis
+
+jobs:
+  capture-patterns:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0  # Full history for pattern analysis
+        
+    - name: 📊 Analyze development patterns
+      id: analyze
+      run: |
+        echo "Analyzing repository patterns automatically..."
+        
+        # Create logs directory
+        mkdir -p logs/auto-captured
+        
+        # Capture basic repository metrics
+        TOTAL_FILES=$(find . -type f -name "*.md" -o -name "*.js" -o -name "*.py" -o -name "*.yml" | wc -l)
+        TOTAL_COMMITS=$(git rev-list --count HEAD)
+        CONTRIBUTORS=$(git log --format='%ae' | sort -u | wc -l)
+        LAST_WEEK_COMMITS=$(git log --since="1 week ago" --oneline | wc -l)
+        
+        # Check for crisis patterns (recent emergency branches)
+        CRISIS_BRANCHES=$(git branch -r | grep -c "crisis/" || echo "0")
+        RECENT_CRISIS=$(git log --since="1 week ago" --grep="CRISIS\|crisis\|emergency\|EMERGENCY" --oneline | wc -l)
+        
+        # Check file size compliance
+        OVERSIZED_FILES=$(find . -name "*.md" -exec wc -l {} \; | awk '$1 > 500 {print $2}' | wc -l)
+        OVERSIZED_SCRIPTS=$(find . -name "*.js" -o -name "*.sh" -exec wc -l {} \; | awk '$1 > 75 {print $2}' | wc -l)
+        
+        # Create automatic pattern log
+        cat > logs/auto-captured/weekly-patterns.json << EOF
+        {
+          "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "analysis_type": "automatic_weekly_capture",
+          "repository_health": {
+            "total_files": $TOTAL_FILES,
+            "total_commits": $TOTAL_COMMITS,
+            "contributors": $CONTRIBUTORS,
+            "recent_activity": $LAST_WEEK_COMMITS,
+            "file_size_compliance": {
+              "oversized_docs": $OVERSIZED_FILES,
+              "oversized_scripts": $OVERSIZED_SCRIPTS,
+              "compliance_score": $((100 - OVERSIZED_FILES - OVERSIZED_SCRIPTS))
+            }
+          },
+          "crisis_indicators": {
+            "crisis_branches_total": $CRISIS_BRANCHES,
+            "recent_crisis_activity": $RECENT_CRISIS,
+            "emergency_response_active": $([ $RECENT_CRISIS -gt 0 ] && echo "true" || echo "false")
+          },
+          "patterns_detected": [],
+          "auto_generated": true,
+          "capture_method": "github_actions"
+        }
+        EOF
+        
+        echo "patterns_captured=true" >> $GITHUB_OUTPUT
+        echo "compliance_score=$((100 - OVERSIZED_FILES - OVERSIZED_SCRIPTS))" >> $GITHUB_OUTPUT
+        
+    - name: 🔍 Detect specific patterns
+      if: steps.analyze.outputs.patterns_captured == 'true'
+      run: |
+        echo "Detecting specific development patterns..."
+        
+        # Check for modularization patterns
+        MODULAR_DOCS=$(find docs/ -name "*-*.md" 2>/dev/null | wc -l || echo "0")
+        MODULAR_SCRIPTS=$(find scripts/ -name "utils" -type d 2>/dev/null | wc -l || echo "0")
+        
+        # Check for AI integration patterns
+        AI_PROMPTS=$(find . -name "*prompt*" -o -name "*ai-*" | wc -l)
+        CLAUDE_INTEGRATION=$(grep -r "Claude Desktop\|AI Development Standards" . --include="*.md" | wc -l || echo "0")
+        
+        # Update patterns
+        jq --arg modular_docs "$MODULAR_DOCS" \
+           --arg modular_scripts "$MODULAR_SCRIPTS" \
+           --arg ai_prompts "$AI_PROMPTS" \
+           --arg claude_integration "$CLAUDE_INTEGRATION" \
+           '.patterns_detected = [
+             {
+               "type": "modular_architecture",
+               "docs_modularized": ($modular_docs | tonumber),
+               "scripts_modularized": ($modular_scripts | tonumber),
+               "strength": (if (($modular_docs | tonumber) + ($modular_scripts | tonumber)) > 5 then "high" else "medium" end)
+             },
+             {
+               "type": "ai_integration", 
+               "prompt_files": ($ai_prompts | tonumber),
+               "integration_references": ($claude_integration | tonumber),
+               "strength": (if ($claude_integration | tonumber) > 10 then "high" else "medium" end)
+             }
+           ]' logs/auto-captured/weekly-patterns.json > temp.json && mv temp.json logs/auto-captured/weekly-patterns.json
+        
+    - name: 📈 Update community patterns
+      run: |
+        echo "Updating community patterns database..."
+        
+        # If community-patterns.json exists, append new auto-generated pattern
+        if [ -f community-patterns.json ]; then
+          # Create auto-generated pattern from current analysis
+          AUTO_PATTERN=$(cat << 'EOF'
+        {
+          "pattern_id": "auto-generated-$(date +%Y%m%d)",
+          "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
+          "session_type": "automatic_capture",
+          "category": "repository-health",
+          "pattern": {
+            "name": "Automated Repository Health Check",
+            "description": "Weekly automatic capture of development patterns",
+            "context": "Regular monitoring of repository compliance and patterns"
+          },
+          "metrics": $(cat logs/auto-captured/weekly-patterns.json | jq '.repository_health'),
+          "auto_generated": true,
+          "community_value": {
+            "monitoring": "continuous",
+            "trend_analysis": "enabled"
+          }
+        }
+        EOF
+          )
+          
+          # Add to existing patterns (if valid JSON)
+          if jq empty community-patterns.json 2>/dev/null; then
+            jq --argjson new_pattern "$AUTO_PATTERN" '. + [$new_pattern]' community-patterns.json > temp-patterns.json
+            mv temp-patterns.json community-patterns.json
+          fi
+        fi
+        
+    - name: 💾 Commit automatic logs
+      run: |
+        git config user.name "GitHub Actions - Auto Logger"
+        git config user.email "actions@github.com"
+        
+        git add logs/auto-captured/ community-patterns.json || true
+        
+        if git diff --staged --quiet; then
+          echo "No new patterns to commit"
+        else
+          git commit -m "📊 Automatic pattern capture - $(date -u +%Y-%m-%d)
+          
+          Auto-generated repository health analysis:
+          - Compliance Score: ${{ steps.analyze.outputs.compliance_score }}/100
+          - Pattern detection and community wisdom updates
+          - Weekly development metrics captured
+          
+          Generated by GitHub Actions - no manual intervention required"
+          git push
+        fi
