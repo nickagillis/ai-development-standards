@@ -1,10 +1,10 @@
-# AI Integration Prompts v1.0 - Core
+# AI Integration Prompts v1.1 - Core
 
 ## 🚀 Perfect Claude Desktop Setup for AI Development Standards
 
 **Get world-class AI development with copy-paste prompts that automatically follow standards.**
 
-**📋 Version: v1.0** | **📅 Released: June 30, 2025** | **🔄 [Updates](ai-integration-prompts-updates.md)**
+**📋 Version: v1.1** | **📅 Released: July 1, 2025** | **🔄 [Updates](ai-integration-prompts-updates.md)**
 
 ---
 
@@ -12,12 +12,18 @@
 
 ### **Core Standards Prompt** 
 ```
-# AI Development Standards Integration v1.0
+# AI Development Standards Integration v1.1
 # 🔄 Update Check: Run 'npm run check-prompt-updates' monthly
 # 📋 Changelog: Check docs/prompt-changelog.md for latest improvements
 # 🧠 Community: Run 'npm run community-wisdom' for latest patterns
 
 I'm working with AI Development Standards from github.com/nickagillis/ai-development-standards
+
+🚨 MANDATORY FIRST STEP: READ HANDOFF-SUMMARY.md BEFORE ANY OTHER ACTION
+- Check github.com/nickagillis/ai-development-standards/blob/main/HANDOFF-SUMMARY.md
+- Understand current project state, compliance score, and any active issues
+- If handoff says "crisis resolved" but user reports problems, investigate the gap
+- Update handoff with accurate status before proceeding
 
 MANDATORY REQUIREMENTS:
 - Context Optimization: Core ≤100 lines, Utils ≤75, Config ≤50, Tests ≤200, Docs ≤500
@@ -29,7 +35,7 @@ MANDATORY REQUIREMENTS:
 PROJECT CONTEXT:
 - Name: [YOUR PROJECT]
 - Type: [React App/Python CLI/MCP Service/Custom]  
-- Standards Version: v1.0
+- Standards Version: v1.1
 - Compliance Target: 95/100+
 - Last Update Check: [UPDATE DATE]
 
@@ -38,15 +44,54 @@ npm run validate-context && npm run validate && npm run pre-merge-validation
 
 SUCCESS CRITERIA: All files respect limits, modular architecture, branch workflow, handoff updated, validation passes.
 
+⚠️ HANDOFF PROTOCOL: 
+1. ALWAYS read HANDOFF-SUMMARY.md first
+2. Verify current state matches user description
+3. Update handoff before starting work
+4. Update handoff again when session ends
+
 ⚠️ PROMPT UPDATE REMINDER: Check docs/prompt-changelog.md monthly for improvements
 
-Acknowledge requirements and start development following these standards.
+Acknowledge requirements and confirm you've read the handoff before starting.
+```
+
+### **Session Continuity Prompt (for Interrupted Sessions)**
+```
+# SESSION CONTINUITY: AI Standards Handoff Protocol v1.1
+# For use when continuing work from previous AI sessions
+
+🚨 CRITICAL: Previous AI session may have been interrupted
+
+MANDATORY HANDOFF PROTOCOL:
+1. READ github.com/nickagillis/ai-development-standards/blob/main/HANDOFF-SUMMARY.md
+2. Check if status matches current user description
+3. If mismatch (e.g., handoff says "resolved" but user reports issues):
+   - Investigate what happened since last handoff
+   - Update handoff with current accurate state
+   - Document the gap for learning
+4. Proceed with appropriate action based on TRUE current state
+
+CONTEXT WINDOW PROTECTION:
+- All files follow size limits for Claude/OpenAI/Gemini compatibility
+- Modular architecture prevents context overflow
+- Handoff provides session-to-session continuity
+
+INCOMPLETE WORK PROTOCOL:
+If previous session was interrupted:
+- Document what was completed vs. what remains
+- Update handoff with honest incomplete status
+- Create clear next steps for continuation
+- Ensure no broken state is left in repository
+
+Continue with full handoff awareness and honest status documentation.
 ```
 
 ### **New Project Setup Prompt**
 ```
-# NEW PROJECT: AI Standards Template Setup v1.0
+# NEW PROJECT: AI Standards Template Setup v1.1
 # 🔄 Latest templates: Check github.com/nickagillis/ai-development-standards/tree/main/templates
+
+🚨 FIRST: Read HANDOFF-SUMMARY.md to understand any existing project state
 
 Initialize [React/Python/MCP/Custom] project using AI Development Standards templates.
 
@@ -64,19 +109,22 @@ Guide me through complete standards-compliant project initialization.
 
 ---
 
-## 🎯 Usage Quick Reference
+## 🎯 Critical Handoff Pattern for All AI Systems
 
-### **Individual Developers**
-- Use **Core Standards Prompt** for all AI development
-- **Monthly check**: `npm run check-prompt-updates`
-- **Subscribe**: GitHub repository notifications for prompt releases
-- Contribute patterns back to community
+### **MANDATORY for Claude, OpenAI, Gemini, and All AI Systems**
 
-### **Teams & Organizations**  
-- **Fork repository** and customize prompts in your version
-- **Set up automated sync** with upstream improvements
-- **Review quarterly**: Major version updates with team training
-- Add organization-specific requirements
+**🚨 EVERY AI SESSION MUST:**
+1. **Read HANDOFF-SUMMARY.md FIRST** - before any other action
+2. **Verify state accuracy** - does handoff match user description?
+3. **Update handoff** with current accurate status
+4. **Maintain handoff** throughout session
+5. **Final handoff update** when session ends
+
+### **Context Window Protection Strategy**
+- **File size limits** prevent AI context overflow
+- **Modular architecture** maintains readability
+- **Handoff documentation** provides session continuity
+- **Works across all AI providers** with context limitations
 
 ---
 
@@ -92,11 +140,12 @@ npm run health-check           # System health
 npm run check-prompt-updates   # Prompt currency check
 ```
 
-### **Expected Outcomes with v1.0**
+### **Expected Outcomes with v1.1**
 - **95/100+ compliance** maintained automatically
 - **Context optimization** issues prevented
 - **Development velocity** increased through standards
 - **Knowledge transfer** seamless between AI sessions
+- **Handoff consistency** across all AI providers
 
 ---
 
@@ -108,6 +157,6 @@ npm run check-prompt-updates   # Prompt currency check
 - **[Examples](ai-integration-prompts-examples.md)** - Project templates
 - **[Troubleshooting](ai-integration-prompts-troubleshooting.md)** - Advanced support
 
-**🎯 Result: AI assistants that automatically follow world-class standards!**
+**🎯 Result: AI assistants that automatically follow world-class standards with perfect session continuity!**
 
-*Updated by community wisdom - Version 1.0 - June 30, 2025*
+*Updated with mandatory handoff protocol - Version 1.1 - July 1, 2025*
