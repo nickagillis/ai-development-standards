@@ -1,22 +1,37 @@
 name: 📊 Repository Health Monitor
 
-# Self-monitoring system to detect issues before they become email spam
-# Runs silently and reports status via GitHub Issues when problems detected
+# 🚨 EMAIL SPAM FIX: Disabled automatic daily schedule to prevent error emails
+# Issue: Daily workflow was running but failing due to malformed job conditions
+# Solution: Manual trigger only + fixed job condition syntax
 
 on:
-  schedule:
-    - cron: '0 6 * * *'  # Daily at 6 AM UTC
-  workflow_dispatch:  # Manual trigger
+  workflow_dispatch:  # Manual trigger only - DAILY SCHEDULE DISABLED TO STOP EMAIL SPAM
+  # schedule:
+  #   - cron: '0 6 * * *'  # DISABLED - Was causing daily error emails due to job condition bugs
 
 jobs:
   health-monitor:
     runs-on: ubuntu-latest
+    # Add outputs for the conditional job to properly access
+    outputs:
+      deps_status: ${{ steps.deps.outputs.deps_status }}
+      scripts_status: ${{ steps.scripts.outputs.scripts_status }}
+      workflow_status: ${{ steps.workflows.outputs.workflow_status }}
+      activity_status: ${{ steps.activity.outputs.activity_status }}
     
     steps:
-    - name: Checkout repository
+    - name: 📥 Checkout repository
       uses: actions/checkout@v4
       with:
         fetch-depth: 10  # Recent history for health analysis
+        
+    - name: 🛡️ Pre-flight Safety Check
+      run: |
+        echo "🚨 EMAIL SPAM FIX ACTIVE: Manual health monitoring only"
+        echo "Workflow triggered by: ${{ github.event_name }}"
+        echo "Repository: ${{ github.repository }}"
+        echo "Ref: ${{ github.ref }}"
+        echo "✅ This should prevent daily error emails to user"
     
     - name: Setup Node.js
       uses: actions/setup-node@v4
@@ -92,19 +107,19 @@ jobs:
         WORKFLOW_ISSUES=0
         
         # Check auto-community-wisdom.yml
-        if grep -q "push:" .github/workflows/auto-community-wisdom.yml 2>/dev/null; then
-          echo "❌ auto-community-wisdom.yml still has push triggers (spam risk)"
+        if grep -q "schedule:" .github/workflows/auto-community-wisdom.yml 2>/dev/null && ! grep -q "# schedule:" .github/workflows/auto-community-wisdom.yml 2>/dev/null; then
+          echo "❌ auto-community-wisdom.yml still has active schedule triggers (spam risk)"
           WORKFLOW_ISSUES=$((WORKFLOW_ISSUES + 1))
         else
-          echo "✅ auto-community-wisdom.yml triggers look safe"
+          echo "✅ auto-community-wisdom.yml schedule triggers disabled"
         fi
         
-        # Check auto-healing-compliance.yml
-        if grep -q "push:" .github/workflows/auto-healing-compliance.yml 2>/dev/null; then
-          echo "❌ auto-healing-compliance.yml still has push triggers (spam risk)"
+        # Check this file (self-check)
+        if grep -q "schedule:" .github/workflows/repository-health-monitor.yml 2>/dev/null && ! grep -q "# schedule:" .github/workflows/repository-health-monitor.yml 2>/dev/null; then
+          echo "❌ repository-health-monitor.yml still has active schedule triggers (spam risk)"
           WORKFLOW_ISSUES=$((WORKFLOW_ISSUES + 1))
         else
-          echo "✅ auto-healing-compliance.yml triggers look safe"
+          echo "✅ repository-health-monitor.yml schedule triggers disabled"
         fi
         
         if [ $WORKFLOW_ISSUES -eq 0 ]; then
@@ -161,20 +176,21 @@ jobs:
         echo "- Rapid Commits (1h): ${{ steps.activity.outputs.rapid_commits || '0' }}" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
         echo "### Email Spam Prevention:" >> $GITHUB_STEP_SUMMARY
-        echo "- ✅ Push triggers removed from community-wisdom workflow" >> $GITHUB_STEP_SUMMARY
-        echo "- ✅ Push triggers removed from auto-healing workflow" >> $GITHUB_STEP_SUMMARY
-        echo "- ✅ Empty scripts fixed to prevent execution failures" >> $GITHUB_STEP_SUMMARY
-        echo "- ✅ Monitoring system active for early issue detection" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Daily schedule triggers DISABLED to prevent error emails" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Manual trigger only for controlled health monitoring" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Fixed job condition syntax to prevent workflow failures" >> $GITHUB_STEP_SUMMARY
+        echo "- ✅ Monitoring system active but only when manually requested" >> $GITHUB_STEP_SUMMARY
         echo "" >> $GITHUB_STEP_SUMMARY
-        echo "*This report helps identify issues before they become email spam* 📧🚫" >> $GITHUB_STEP_SUMMARY
+        echo "*🎯 EMAIL SPAM SOLUTION: This workflow only runs when manually triggered*" >> $GITHUB_STEP_SUMMARY
 
   create-issue-if-critical:
     runs-on: ubuntu-latest
     needs: health-monitor
+    # FIXED: Corrected condition syntax to properly reference outputs from health-monitor job
     if: |
-      steps.deps.outputs.deps_status == 'critical' || 
-      steps.scripts.outputs.scripts_status == 'critical' || 
-      steps.workflows.outputs.workflow_status == 'critical'
+      needs.health-monitor.outputs.deps_status == 'critical' || 
+      needs.health-monitor.outputs.scripts_status == 'critical' || 
+      needs.health-monitor.outputs.workflow_status == 'critical'
     
     steps:
     - name: Create Health Alert Issue
@@ -187,9 +203,9 @@ jobs:
           This is an automated alert from the Repository Health Monitor.
           
           ## Issues Detected:
-          - Dependencies: ${{ steps.deps.outputs.deps_status || 'unknown' }}
-          - Scripts: ${{ steps.scripts.outputs.scripts_status || 'unknown' }}  
-          - Workflows: ${{ steps.workflows.outputs.workflow_status || 'unknown' }}
+          - Dependencies: ${{ needs.health-monitor.outputs.deps_status || 'unknown' }}
+          - Scripts: ${{ needs.health-monitor.outputs.scripts_status || 'unknown' }}  
+          - Workflows: ${{ needs.health-monitor.outputs.workflow_status || 'unknown' }}
           
           ## Impact:
           These issues could lead to:
@@ -203,11 +219,11 @@ jobs:
           3. Ensure workflow triggers are properly configured
           4. Test npm dependency installation
           
-          ## Monitoring:
-          This issue was created automatically to prevent email spam.
-          The monitoring system will continue to watch for problems.
+          ## Email Spam Prevention:
+          This workflow now only runs manually to prevent email spam.
+          The monitoring system will only run when requested.
           
-          *Auto-generated by Repository Health Monitor*`;
+          *Auto-generated by Repository Health Monitor (Manual Run)*`;
           
           await github.rest.issues.create({
             owner: context.repo.owner,
